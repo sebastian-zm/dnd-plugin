@@ -1,0 +1,19 @@
+{
+    "id": "dnd-plugin-v1",
+    "uuid": "a1b2c3d4-e5f6-7890-1234-567890abcdef",
+    "title": "D&D Dungeon Master",
+    "iconURL": "https://raw.githubusercontent.com/your-username/dnd-plugin/main/src/assets/icon.png",
+    "githubURL": "https://github.com/your-username/dnd-plugin",
+    "userSettings": [
+        {
+            "name": "externalDbUrl",
+            "type": "password",
+            "label": "External DB URL (Optional)",
+            "required": false,
+            "description": "URL for an external database (e.g., a Supabase or Firebase endpoint) to persist game state."
+        }
+    ],
+    "pluginFunctions": [],
+    "overviewMarkdown": "",
+    "authenticationType": "AUTH_TYPE_NONE"
+}

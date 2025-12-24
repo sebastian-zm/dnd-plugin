@@ -1,0 +1,82 @@
+{
+  "name": "create_npc",
+  "description": "Creates a new Non-Player Character (NPC) for the game.",
+  "parameters": {
+    "type": "object",
+    "properties": {
+      "name": {
+        "type": "string",
+        "description": "The name of the NPC."
+      },
+      "species": {
+        "type": "string",
+        "description": "The species of the NPC (e.g., Human, Elf)."
+      },
+      "ac": {
+        "type": "integer",
+        "description": "The Armor Class of the NPC."
+      },
+      "max_hp": {
+        "type": "integer",
+        "description": "The maximum hit points of the NPC."
+      },
+      "current_hp": {
+        "type": "integer",
+        "description": "The current hit points of the NPC. Defaults to max_hp if not provided."
+      },
+      "temporary_hp": {
+        "type": "integer",
+        "description": "The temporary hit points of the NPC. Defaults to 0."
+      },
+      "speeds": {
+        "type": "string",
+        "description": "The speeds of the NPC (e.g., '30ft, fly 60ft')."
+      },
+      "str": {
+        "type": "integer",
+        "description": "The Strength score of the NPC."
+      },
+      "dex": {
+        "type": "integer",
+        "description": "The Dexterity score of the NPC."
+      },
+      "con": {
+        "type": "integer",
+        "description": "The Constitution score of the NPC."
+      },
+      "int_": {
+        "type": "integer",
+        "description": "The Intelligence score of the NPC."
+      },
+      "wis": {
+        "type": "integer",
+        "description": "The Wisdom score of the NPC."
+      },
+      "cha": {
+        "type": "integer",
+        "description": "The Charisma score of the NPC."
+      },
+      "pb": {
+        "type": "integer",
+        "description": "The Proficiency Bonus of the NPC."
+      },
+      "skills": {
+        "type": "string",
+        "description": "The skills of the NPC (e.g., 'Perception +5, Stealth +7')."
+      },
+      "senses": {
+        "type": "string",
+        "description": "The senses of the NPC (e.g., 'Darkvision 60ft, Passive Perception 15')."
+      },
+      "languages": {
+        "type": "string",
+        "description": "The languages spoken by the NPC."
+      },
+      "cr": {
+        "type": "string",
+        "description": "The Challenge Rating of the NPC."
+      }
+    },
+    "required": ["name"]
+  }
+}

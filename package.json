@@ -1,0 +1,15 @@
+{
+  "name": "dnd-plugin",
+  "version": "1.0.0",
+  "description": "A TypingMind plugin for Dungeons and Dragons.",
+  "type": "module",
+  "scripts": {
+    "build": "node scripts/build.mjs"
+  },
+  "keywords": [
+    "typingmind-plugin",
+    "dnd"
+  ],
+  "author": "",
+  "license": "ISC"
+}
