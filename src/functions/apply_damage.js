@@ -16,7 +16,7 @@ export default async function apply_damage(params, userSettings) {
     throw err;
   }
 
-  if (!record) {
+  if (!record || record.game_slug !== game) {
     return `No ${entity_type} found with identifier "${entity}" in game "${game}".`;
   }
 
@@ -25,14 +25,27 @@ export default async function apply_damage(params, userSettings) {
   const new_temporary_hp = record.temporary_hp - tempAbsorbed;
   const new_current_hp = Math.max(0, record.current_hp - remaining);
 
-  await store.patch(table, record.id, {
-    current_hp: new_current_hp,
-    temporary_hp: new_temporary_hp,
-  });
+  try {
+    await store.patch(table, record.id, {
+      current_hp: new_current_hp,
+      temporary_hp: new_temporary_hp,
+    });
+  } catch (err) {
+    if (err.code === '42P01' || err.code === '42703') {
+      return `Schema error: ${err.message}. Please call dnd5e24_run_migrations then retry.`;
+    }
+    throw err;
+  }
 
   const typeStr = damage_type ? ` ${damage_type}` : '';
   const tempNote = tempAbsorbed > 0 ? ` (${tempAbsorbed} absorbed by temporary HP)` : '';
-  const status = new_current_hp === 0 ? ' — now at 0 HP (unconscious or dead).' : `.`;
+  let status = '.';
+  if (new_current_hp === 0) {
+    status = entity_type === 'character'
+      ? ' — now at 0 HP. Unconscious; rolling death saves.'
+      : ' — now at 0 HP. Dead.';
+  }
+  const tempStr = new_temporary_hp > 0 ? `, Temp HP: ${new_temporary_hp}` : '';
 
-  return `${record.name} takes ${amount}${typeStr} damage${tempNote}. HP: ${new_current_hp}/${record.max_hp}${record.temporary_hp !== new_temporary_hp ? `, Temp HP: ${new_temporary_hp}` : ''}${status}`;
+  return `${record.name} takes ${amount}${typeStr} damage${tempNote}. HP: ${new_current_hp}/${record.max_hp}${tempStr}${status}`;
 }

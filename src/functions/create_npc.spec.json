@@ -3,7 +3,6 @@
   "description": "Creates a new Non-Player Character (NPC) within a game.",
   "parameters": {
     "type": "object",
-    "required": ["game", "slug", "name"],
     "properties": {
       "game": {
         "type": "string",

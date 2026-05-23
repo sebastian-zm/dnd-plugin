@@ -41,7 +41,13 @@ async function build() {
     );
 
     const functionFiles = await fs.readdir(FUNCTIONS_DIR);
-    const functionNames = [...new Set(functionFiles.map(f => f.split('.')[0]))];
+    const jsNames = new Set(
+      functionFiles.filter(f => f.endsWith('.js')).map(f => f.replace(/\.js$/, ''))
+    );
+    const functionNames = functionFiles
+      .filter(f => f.endsWith('.spec.json'))
+      .map(f => f.replace(/\.spec\.json$/, ''))
+      .filter(n => jsNames.has(n));
 
     const pluginFunctions = await Promise.all(
       functionNames.map(async (name) => {
@@ -51,7 +57,7 @@ async function build() {
         const code = await bundleFunction(name, prefixedName);
 
         return {
-          id: `dnd-${name}-${Date.now()}`,
+          id: `dnd-${name}`,
           name: prefixedName,
           openaiSpec: { ...spec, name: prefixedName },
           code,

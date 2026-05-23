@@ -3,10 +3,10 @@
 This plugin transforms your AI assistant into a Dungeon Master for Dungeons & Dragons 2024 Revision.
 
 ### Features
-- **Game Management**: Create, manage, and save multiple D&D games.
-- **Character Management**: Add and control characters within your games.
-- **HP Tracking**: Easily track character hit points.
-- **Damage and Healing**: Apply damage or healing to characters.
+- **Game Management**: Create and persist multiple D&D games. Each game is identified by a slug used in every other call.
+- **Characters & NPCs**: Add player characters and NPCs (monsters, allies, etc.) scoped to a game, each with a unique slug.
+- **HP Tracking**: Track current, max, and temporary HP for any character or NPC.
+- **Damage and Healing**: Apply damage (with temporary-HP absorption) or healing (including temporary HP) to any combatant.
 
 ---
 

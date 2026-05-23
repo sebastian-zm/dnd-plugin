@@ -1,6 +1,6 @@
 {
   "name": "list_npcs",
-  "description": "Lists all NPCs in a game.",
+  "description": "Lists all NPCs in a game with a summary (slug, name, CR, AC, HP). For a full statblock, look up the NPC by slug.",
   "parameters": {
     "type": "object",
     "required": ["game"],

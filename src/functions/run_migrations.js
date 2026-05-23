@@ -130,6 +130,14 @@ const MIGRATIONS = [
       );
     `,
   },
+  {
+    version: '20260523130000',
+    name: 'backfill_empty_npc_slugs',
+    sql: `
+      UPDATE npcs SET slug = id::text WHERE slug = '';
+      UPDATE npcs SET game_slug = id::text WHERE game_slug = '';
+    `,
+  },
 ];
 
 export default async function run_migrations(params, userSettings) {
@@ -186,7 +194,7 @@ export default async function run_migrations(params, userSettings) {
     }
     await execute(migration.sql);
     await execute(
-      `INSERT INTO schema_migrations (version, name) VALUES ('${migration.version}', '${migration.name}')`
+      `INSERT INTO schema_migrations (version, name) VALUES ('${migration.version}', '${migration.name}') ON CONFLICT (version) DO NOTHING`
     );
     results.push(`${migration.version} (${migration.name}): applied`);
   }

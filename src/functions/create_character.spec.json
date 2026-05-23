@@ -179,17 +179,40 @@
       "damage_resistances": {
         "type": "array",
         "description": "Damage types the character is resistant to.",
-        "items": { "type": "string" }
+        "items": {
+          "type": "string",
+          "enum": [
+            "Acid", "Bludgeoning", "Cold", "Fire", "Force", "Lightning",
+            "Necrotic", "Piercing", "Poison", "Psychic", "Radiant",
+            "Slashing", "Thunder",
+            "Nonmagical Bludgeoning", "Nonmagical Piercing", "Nonmagical Slashing"
+          ]
+        }
       },
       "damage_immunities": {
         "type": "array",
         "description": "Damage types the character is immune to.",
-        "items": { "type": "string" }
+        "items": {
+          "type": "string",
+          "enum": [
+            "Acid", "Bludgeoning", "Cold", "Fire", "Force", "Lightning",
+            "Necrotic", "Piercing", "Poison", "Psychic", "Radiant",
+            "Slashing", "Thunder",
+            "Nonmagical Bludgeoning", "Nonmagical Piercing", "Nonmagical Slashing"
+          ]
+        }
       },
       "condition_immunities": {
         "type": "array",
         "description": "Conditions the character is immune to.",
-        "items": { "type": "string" }
+        "items": {
+          "type": "string",
+          "enum": [
+            "Blinded", "Charmed", "Deafened", "Exhaustion", "Frightened",
+            "Grappled", "Incapacitated", "Invisible", "Paralyzed", "Petrified",
+            "Poisoned", "Prone", "Restrained", "Stunned", "Unconscious"
+          ]
+        }
       },
       "features": {
         "type": "array",

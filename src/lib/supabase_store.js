@@ -76,10 +76,11 @@ export class SupabaseStore {
   }
 
   async patch(table, id, changes) {
-    const res = await fetch(`${this.url}/rest/v1/${table}?id=eq.${id}`, {
+    const body = { ...changes, updated_at: new Date().toISOString() };
+    const res = await fetch(`${this.url}/rest/v1/${table}?id=eq.${encodeURIComponent(id)}`, {
       method: 'PATCH',
       headers: { ...this.#headers, 'Prefer': 'return=representation' },
-      body: JSON.stringify(changes),
+      body: JSON.stringify(body),
     });
     await this.#checkResponse(res, `patch ${table}`);
     const data = await res.json();
@@ -87,7 +88,7 @@ export class SupabaseStore {
   }
 
   async delete(table, id) {
-    const res = await fetch(`${this.url}/rest/v1/${table}?id=eq.${id}`, {
+    const res = await fetch(`${this.url}/rest/v1/${table}?id=eq.${encodeURIComponent(id)}`, {
       method: 'DELETE',
       headers: this.#headers,
     });

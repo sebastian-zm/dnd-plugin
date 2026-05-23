@@ -86,6 +86,10 @@ export default async function create_character(params, userSettings) {
 
   const store = new SupabaseStore(userSettings.externalDbUrl, userSettings.externalDbKey);
   try {
+    const gameRecord = await store.get('games', game);
+    if (!gameRecord) {
+      return `No game found with slug "${game}". Create it first with dnd5e24_create_game, or check the slug.`;
+    }
     await store.insert('characters', character);
   } catch (err) {
     if (err.code === '42P01' || err.code === '42703') {
