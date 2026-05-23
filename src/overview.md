@@ -1,6 +1,6 @@
 ## D&D Dungeon Master Assistant
 
-This plugin transforms your AI assistant into a Dungeon Master for Dungeons & Dragons 5th Edition.
+This plugin transforms your AI assistant into a Dungeon Master for Dungeons & Dragons 2024 Revision.
 
 ### Features:
 - **Game Management**: Create, manage, and save multiple D&D games.

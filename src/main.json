@@ -7,10 +7,16 @@
     "userSettings": [
         {
             "name": "externalDbUrl",
+            "label": "External Supabase URL",
+            "required": true,
+            "description": "URL for an external Supabase database to persist game state."
+        },
+        {
+            "name": "externalDbKey",
             "type": "password",
-            "label": "External DB URL (Optional)",
-            "required": false,
-            "description": "URL for an external database (e.g., a Supabase or Firebase endpoint) to persist game state."
+            "label": "External Supabase API Key",
+            "required": true,
+            "description": "API key (anon or service_role) for the Supabase database."
         }
     ],
     "pluginFunctions": [],

@@ -1,4 +1,6 @@
-function create_npc(params, userSettings) {
+import { SupabaseStore } from '../lib/supabase_store.js';
+
+export default async function create_npc(params, userSettings) {
   const {
     name,
     species,
@@ -7,45 +9,91 @@ function create_npc(params, userSettings) {
     current_hp,
     temporary_hp,
     speeds,
-    str,
-    dex,
-    con,
-    int_,
-    wis,
-    cha,
+    strength,
+    dexterity,
+    constitution,
+    intelligence,
+    wisdom,
+    charisma,
     pb,
-    skills,
     senses,
     languages,
     cr,
+    proficiencies,
+    expertise,
+    weapon_mastery,
+    spellcasting_ability,
+    spells_known,
+    spells_prepared,
+    spell_slots_total,
+    spell_slots_usable,
+    size,
+    creature_type,
+    alignment,
+    damage_resistances,
+    damage_immunities,
+    damage_vulnerabilities,
+    condition_immunities,
+    traits,
+    actions,
+    bonus_actions,
+    reactions,
+    legendary_resistances,
+    legendary_actions,
+    lair_actions,
+    equipment,
+    notes,
   } = params;
 
-  if (!name) {
-    throw new Error('The "name" argument is required.');
-  }
+  const id = crypto.randomUUID();
 
   const npc = {
+    id,
     name,
     species,
+    size,
+    creature_type,
+    alignment,
     ac,
     max_hp,
     current_hp: current_hp ?? max_hp,
     temporary_hp: temporary_hp ?? 0,
     speeds,
-    str,
-    dex,
-    con,
-    int: int_,
-    wis,
-    cha,
+    strength,
+    dexterity,
+    constitution,
+    intelligence,
+    wisdom,
+    charisma,
     pb,
-    skills,
+    proficiencies: proficiencies ?? [],
+    expertise: expertise ?? [],
+    weapon_mastery: weapon_mastery ?? [],
+    spellcasting_ability,
+    spells_known: spells_known ?? [],
+    spells_prepared: spells_prepared ?? [],
+    spell_slots_total: spell_slots_total ?? {},
+    spell_slots_usable: spell_slots_usable ?? spell_slots_total ?? {},
     senses,
-    languages,
+    languages: languages ?? [],
     cr,
+    damage_resistances: damage_resistances ?? [],
+    damage_immunities: damage_immunities ?? [],
+    damage_vulnerabilities: damage_vulnerabilities ?? [],
+    condition_immunities: condition_immunities ?? [],
+    traits: traits ?? [],
+    actions: actions ?? [],
+    bonus_actions: bonus_actions ?? [],
+    reactions: reactions ?? [],
+    legendary_resistances: legendary_resistances ?? 0,
+    legendary_actions: legendary_actions ?? [],
+    lair_actions: lair_actions ?? [],
+    equipment: equipment ?? [],
+    notes,
   };
 
-  // In a real implementation, you would save the NPC to a database.
-  // For now, we'll just return the created NPC object.
-  return npc;
-};
+  const store = new SupabaseStore(userSettings.externalDbUrl, userSettings.externalDbKey);
+  await store.upsert('npcs', npc);
+
+  return `NPC created. UUID: ${id}`;
+}

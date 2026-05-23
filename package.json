@@ -4,12 +4,18 @@
   "description": "A TypingMind plugin for Dungeons and Dragons.",
   "type": "module",
   "scripts": {
-    "build": "node scripts/build.mjs"
+    "build": "node scripts/build.mjs",
+    "lint": "eslint ."
   },
   "keywords": [
     "typingmind-plugin",
     "dnd"
   ],
   "author": "",
-  "license": "ISC"
+  "license": "ISC",
+  "devDependencies": {
+    "@eslint/js": "^10.0.1",
+    "esbuild": "^0.28.0",
+    "eslint": "^10.4.0"
+  }
 }
