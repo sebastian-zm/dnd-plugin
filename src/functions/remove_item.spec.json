@@ -1,0 +1,27 @@
+{
+  "name": "remove_item",
+  "description": "Removes an item from a character's or NPC's equipment list. Removes the first exact match.",
+  "parameters": {
+    "type": "object",
+    "required": ["game", "entity_type", "entity", "item"],
+    "properties": {
+      "game": {
+        "type": "string",
+        "description": "The slug of the game."
+      },
+      "entity_type": {
+        "type": "string",
+        "enum": ["character", "npc"],
+        "description": "Whether the target is a player character or an NPC."
+      },
+      "entity": {
+        "type": "string",
+        "description": "The slug or UUID of the character or NPC."
+      },
+      "item": {
+        "type": "string",
+        "description": "The exact item string to remove (must match an entry in the equipment list)."
+      }
+    }
+  }
+}

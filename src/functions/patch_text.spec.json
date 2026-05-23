@@ -1,0 +1,35 @@
+{
+  "name": "patch_text",
+  "description": "Replaces a substring within a text field of a game, character, NPC, or memory. Use this to make targeted edits to long descriptions or notes without rewriting the entire field. The search string must match exactly (case-sensitive).",
+  "parameters": {
+    "type": "object",
+    "required": ["entity_type", "entity", "field", "search", "replacement"],
+    "properties": {
+      "entity_type": {
+        "type": "string",
+        "enum": ["character", "npc", "game", "memory"],
+        "description": "The type of entity to edit."
+      },
+      "entity": {
+        "type": "string",
+        "description": "The slug or UUID of the entity."
+      },
+      "game": {
+        "type": "string",
+        "description": "The slug of the game. Required for character, npc, and memory; omit for game."
+      },
+      "field": {
+        "type": "string",
+        "description": "The text field to edit. Common values: 'notes' (character, npc, game), 'description' (game), 'memory' (memory)."
+      },
+      "search": {
+        "type": "string",
+        "description": "The exact substring to find (case-sensitive). Copy it verbatim from the record."
+      },
+      "replacement": {
+        "type": "string",
+        "description": "The text to replace the matched substring with."
+      }
+    }
+  }
+}

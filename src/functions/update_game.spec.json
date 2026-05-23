@@ -1,0 +1,22 @@
+{
+  "name": "update_game",
+  "description": "Updates the name or description of an existing game.",
+  "parameters": {
+    "type": "object",
+    "required": ["game"],
+    "properties": {
+      "game": {
+        "type": "string",
+        "description": "The slug or UUID of the game to update."
+      },
+      "name": {
+        "type": "string",
+        "description": "New display name for the game."
+      },
+      "description": {
+        "type": "string",
+        "description": "New notes or description for the game."
+      }
+    }
+  }
+}

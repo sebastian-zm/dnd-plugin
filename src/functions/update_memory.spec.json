@@ -1,0 +1,26 @@
+{
+  "name": "update_memory",
+  "description": "Updates the name and/or text of an existing memory. Use patch_text instead when you only need to change a portion of the memory text.",
+  "parameters": {
+    "type": "object",
+    "required": ["game", "slug"],
+    "properties": {
+      "game": {
+        "type": "string",
+        "description": "The slug of the game."
+      },
+      "slug": {
+        "type": "string",
+        "description": "The slug or UUID of the memory to update."
+      },
+      "name": {
+        "type": "string",
+        "description": "New short label for the memory."
+      },
+      "memory": {
+        "type": "string",
+        "description": "New full memory text (replaces the existing text entirely)."
+      }
+    }
+  }
+}

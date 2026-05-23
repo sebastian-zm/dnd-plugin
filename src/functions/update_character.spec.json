@@ -1,0 +1,194 @@
+{
+  "name": "update_character",
+  "description": "Partially updates a player character. Only the fields provided are changed; all others remain unchanged. Use this to level up, adjust stats, update spell slots, etc.",
+  "parameters": {
+    "type": "object",
+    "required": ["game", "character"],
+    "properties": {
+      "game": {
+        "type": "string",
+        "description": "The slug of the game."
+      },
+      "character": {
+        "type": "string",
+        "description": "The slug or UUID of the character to update."
+      },
+      "name": { "type": "string", "description": "The character's name." },
+      "player": { "type": "string", "description": "The name of the player controlling this character." },
+      "species": { "type": "string", "description": "The character's species." },
+      "class_name": { "type": "string", "description": "The character's primary class." },
+      "subclass": { "type": "string", "description": "The character's subclass." },
+      "level": { "type": "integer", "description": "The character's level (1–20).", "minimum": 1, "maximum": 20 },
+      "background": { "type": "string", "description": "The character's background." },
+      "ac": { "type": "integer", "description": "Armor Class." },
+      "max_hp": { "type": "integer", "description": "Maximum hit points." },
+      "current_hp": { "type": "integer", "description": "Current hit points." },
+      "temporary_hp": { "type": "integer", "description": "Temporary hit points." },
+      "speeds": { "type": "string", "description": "Movement speeds." },
+      "strength": { "type": "integer", "description": "Strength score." },
+      "dexterity": { "type": "integer", "description": "Dexterity score." },
+      "constitution": { "type": "integer", "description": "Constitution score." },
+      "intelligence": { "type": "integer", "description": "Intelligence score." },
+      "wisdom": { "type": "integer", "description": "Wisdom score." },
+      "charisma": { "type": "integer", "description": "Charisma score." },
+      "pb": { "type": "integer", "description": "Proficiency bonus." },
+      "proficiencies": {
+        "type": "array",
+        "description": "Saving throw and skill proficiencies (replaces the entire list).",
+        "items": {
+          "type": "string",
+          "enum": [
+            "Strength Save", "Dexterity Save", "Constitution Save",
+            "Intelligence Save", "Wisdom Save", "Charisma Save",
+            "Acrobatics", "Animal Handling", "Arcana", "Athletics",
+            "Deception", "History", "Insight", "Intimidation",
+            "Investigation", "Medicine", "Nature", "Perception",
+            "Performance", "Persuasion", "Religion", "Sleight of Hand",
+            "Stealth", "Survival"
+          ]
+        }
+      },
+      "expertise": {
+        "type": "array",
+        "description": "Skills with expertise (replaces the entire list).",
+        "items": {
+          "type": "string",
+          "enum": [
+            "Acrobatics", "Animal Handling", "Arcana", "Athletics",
+            "Deception", "History", "Insight", "Intimidation",
+            "Investigation", "Medicine", "Nature", "Perception",
+            "Performance", "Persuasion", "Religion", "Sleight of Hand",
+            "Stealth", "Survival"
+          ]
+        }
+      },
+      "weapon_mastery": {
+        "type": "array",
+        "description": "Weapon masteries (replaces the entire list).",
+        "items": {
+          "type": "string",
+          "enum": [
+            "Club", "Dagger", "Greatclub", "Handaxe", "Javelin",
+            "Light Hammer", "Mace", "Quarterstaff", "Sickle", "Spear",
+            "Dart", "Light Crossbow", "Shortbow", "Sling",
+            "Battleaxe", "Flail", "Glaive", "Greataxe", "Greatsword",
+            "Halberd", "Lance", "Longsword", "Maul", "Morningstar",
+            "Pike", "Rapier", "Scimitar", "Shortsword", "Trident",
+            "War Pick", "Warhammer", "Whip",
+            "Blowgun", "Hand Crossbow", "Heavy Crossbow", "Longbow",
+            "Musket", "Pistol"
+          ]
+        }
+      },
+      "spellcasting_ability": {
+        "type": "string",
+        "description": "Spellcasting ability score.",
+        "enum": ["Strength", "Dexterity", "Constitution", "Intelligence", "Wisdom", "Charisma"]
+      },
+      "spells_known": {
+        "type": "array",
+        "description": "Spells known (replaces the entire list).",
+        "items": { "type": "string" }
+      },
+      "spells_prepared": {
+        "type": "array",
+        "description": "Spells prepared (replaces the entire list).",
+        "items": { "type": "string" }
+      },
+      "spell_slots_total": {
+        "type": "object",
+        "description": "Total spell slots per level (1–9) per day.",
+        "properties": {
+          "1": { "type": "integer" }, "2": { "type": "integer" },
+          "3": { "type": "integer" }, "4": { "type": "integer" },
+          "5": { "type": "integer" }, "6": { "type": "integer" },
+          "7": { "type": "integer" }, "8": { "type": "integer" },
+          "9": { "type": "integer" }
+        }
+      },
+      "spell_slots_usable": {
+        "type": "object",
+        "description": "Remaining spell slots per level (1–9).",
+        "properties": {
+          "1": { "type": "integer" }, "2": { "type": "integer" },
+          "3": { "type": "integer" }, "4": { "type": "integer" },
+          "5": { "type": "integer" }, "6": { "type": "integer" },
+          "7": { "type": "integer" }, "8": { "type": "integer" },
+          "9": { "type": "integer" }
+        }
+      },
+      "senses": { "type": "string", "description": "Special senses." },
+      "languages": {
+        "type": "array",
+        "description": "Languages spoken (replaces the entire list).",
+        "items": {
+          "type": "string",
+          "enum": [
+            "Common", "Common Sign Language", "Dwarvish", "Elvish", "Giant",
+            "Gnomish", "Goblin", "Halfling", "Orcish", "Abyssal", "Celestial",
+            "Deep Speech", "Draconic", "Druidic", "Infernal", "Primordial",
+            "Aquan", "Auran", "Ignan", "Terran", "Sylvan", "Thieves' Cant",
+            "Undercommon"
+          ]
+        }
+      },
+      "damage_resistances": {
+        "type": "array",
+        "description": "Damage resistances (replaces the entire list).",
+        "items": {
+          "type": "string",
+          "enum": [
+            "Acid", "Bludgeoning", "Cold", "Fire", "Force", "Lightning",
+            "Necrotic", "Piercing", "Poison", "Psychic", "Radiant",
+            "Slashing", "Thunder",
+            "Nonmagical Bludgeoning", "Nonmagical Piercing", "Nonmagical Slashing"
+          ]
+        }
+      },
+      "damage_immunities": {
+        "type": "array",
+        "description": "Damage immunities (replaces the entire list).",
+        "items": {
+          "type": "string",
+          "enum": [
+            "Acid", "Bludgeoning", "Cold", "Fire", "Force", "Lightning",
+            "Necrotic", "Piercing", "Poison", "Psychic", "Radiant",
+            "Slashing", "Thunder",
+            "Nonmagical Bludgeoning", "Nonmagical Piercing", "Nonmagical Slashing"
+          ]
+        }
+      },
+      "condition_immunities": {
+        "type": "array",
+        "description": "Condition immunities (replaces the entire list).",
+        "items": {
+          "type": "string",
+          "enum": [
+            "Blinded", "Charmed", "Deafened", "Exhaustion", "Frightened",
+            "Grappled", "Incapacitated", "Invisible", "Paralyzed", "Petrified",
+            "Poisoned", "Prone", "Restrained", "Stunned", "Unconscious"
+          ]
+        }
+      },
+      "features": {
+        "type": "array",
+        "description": "Class features, feats, and background abilities (replaces the entire list).",
+        "items": {
+          "type": "object",
+          "properties": {
+            "name": { "type": "string" },
+            "description": { "type": "string" }
+          },
+          "required": ["name", "description"]
+        }
+      },
+      "equipment": {
+        "type": "array",
+        "description": "Equipment list (replaces the entire list). Use give_item / remove_item for individual item changes.",
+        "items": { "type": "string" }
+      },
+      "notes": { "type": "string", "description": "Freeform notes about the character." },
+      "gold": { "type": "number", "description": "Wealth in gold pieces.", "minimum": 0 }
+    }
+  }
+}
