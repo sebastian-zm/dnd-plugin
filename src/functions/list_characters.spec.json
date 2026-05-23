@@ -1,0 +1,14 @@
+{
+  "name": "list_characters",
+  "description": "Lists all player characters in a game.",
+  "parameters": {
+    "type": "object",
+    "required": ["game"],
+    "properties": {
+      "game": {
+        "type": "string",
+        "description": "The slug of the game."
+      }
+    }
+  }
+}

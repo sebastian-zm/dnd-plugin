@@ -1,0 +1,32 @@
+{
+  "name": "apply_damage",
+  "description": "Applies damage to a character or NPC. Temporary HP absorbs damage first; excess spills into current HP. HP cannot go below 0.",
+  "parameters": {
+    "type": "object",
+    "required": ["game", "entity_type", "entity", "amount"],
+    "properties": {
+      "game": {
+        "type": "string",
+        "description": "The slug of the game."
+      },
+      "entity_type": {
+        "type": "string",
+        "enum": ["character", "npc"],
+        "description": "Whether the target is a player character or an NPC."
+      },
+      "entity": {
+        "type": "string",
+        "description": "The slug or UUID of the character or NPC to damage."
+      },
+      "amount": {
+        "type": "integer",
+        "description": "The amount of damage to apply.",
+        "minimum": 0
+      },
+      "damage_type": {
+        "type": "string",
+        "description": "The type of damage (e.g., fire, slashing, necrotic). Used for narrative purposes only — resistances and immunities are not applied automatically."
+      }
+    }
+  }
+}

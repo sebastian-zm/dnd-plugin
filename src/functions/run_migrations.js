@@ -1,0 +1,195 @@
+const MIGRATIONS = [
+  {
+    version: '20260523110846',
+    name: 'create_npcs_table',
+    sql: `
+      CREATE TABLE IF NOT EXISTS npcs (
+        id                    UUID PRIMARY KEY,
+        name                  TEXT,
+        species               TEXT,
+        size                  TEXT,
+        creature_type         TEXT,
+        alignment             TEXT,
+        ac                    INTEGER,
+        max_hp                INTEGER,
+        current_hp            INTEGER,
+        temporary_hp          INTEGER DEFAULT 0,
+        speeds                TEXT,
+        strength              INTEGER,
+        dexterity             INTEGER,
+        constitution          INTEGER,
+        intelligence          INTEGER,
+        wisdom                INTEGER,
+        charisma              INTEGER,
+        pb                    INTEGER,
+        proficiencies         JSONB DEFAULT '[]',
+        expertise             JSONB DEFAULT '[]',
+        weapon_mastery        JSONB DEFAULT '[]',
+        spellcasting_ability  TEXT,
+        spells_known          JSONB DEFAULT '[]',
+        spells_prepared       JSONB DEFAULT '[]',
+        spell_slots_total     JSONB DEFAULT '{}',
+        spell_slots_usable    JSONB DEFAULT '{}',
+        senses                TEXT,
+        languages             JSONB DEFAULT '[]',
+        cr                    TEXT,
+        damage_resistances    JSONB DEFAULT '[]',
+        damage_immunities     JSONB DEFAULT '[]',
+        damage_vulnerabilities JSONB DEFAULT '[]',
+        condition_immunities  JSONB DEFAULT '[]',
+        traits                JSONB DEFAULT '[]',
+        actions               JSONB DEFAULT '[]',
+        bonus_actions         JSONB DEFAULT '[]',
+        reactions             JSONB DEFAULT '[]',
+        legendary_resistances INTEGER DEFAULT 0,
+        legendary_actions     JSONB DEFAULT '[]',
+        lair_actions          JSONB DEFAULT '[]',
+        equipment             JSONB DEFAULT '[]',
+        notes                 TEXT,
+        created_at            TIMESTAMPTZ DEFAULT NOW(),
+        updated_at            TIMESTAMPTZ DEFAULT NOW()
+      );
+    `,
+  },
+  {
+    version: '20260523120000',
+    name: 'create_games_table',
+    sql: `
+      CREATE TABLE IF NOT EXISTS games (
+        id          UUID PRIMARY KEY,
+        slug        TEXT UNIQUE NOT NULL,
+        name        TEXT NOT NULL,
+        description TEXT,
+        created_at  TIMESTAMPTZ DEFAULT NOW(),
+        updated_at  TIMESTAMPTZ DEFAULT NOW()
+      );
+    `,
+  },
+  {
+    version: '20260523120001',
+    name: 'add_slug_and_game_to_npcs',
+    sql: `
+      ALTER TABLE npcs ADD COLUMN IF NOT EXISTS game_slug TEXT NOT NULL DEFAULT '';
+      ALTER TABLE npcs ADD COLUMN IF NOT EXISTS slug TEXT NOT NULL DEFAULT '';
+      DO $$
+      BEGIN
+        IF NOT EXISTS (
+          SELECT 1 FROM pg_constraint WHERE conname = 'npcs_game_slug_slug_unique'
+        ) THEN
+          ALTER TABLE npcs ADD CONSTRAINT npcs_game_slug_slug_unique UNIQUE (game_slug, slug);
+        END IF;
+      END $$;
+    `,
+  },
+  {
+    version: '20260523120002',
+    name: 'create_characters_table',
+    sql: `
+      CREATE TABLE IF NOT EXISTS characters (
+        id                    UUID PRIMARY KEY,
+        game_slug             TEXT NOT NULL,
+        slug                  TEXT NOT NULL,
+        name                  TEXT NOT NULL,
+        player                TEXT,
+        species               TEXT,
+        class_name            TEXT,
+        subclass              TEXT,
+        level                 INTEGER DEFAULT 1,
+        background            TEXT,
+        ac                    INTEGER,
+        max_hp                INTEGER,
+        current_hp            INTEGER,
+        temporary_hp          INTEGER DEFAULT 0,
+        speeds                TEXT,
+        strength              INTEGER,
+        dexterity             INTEGER,
+        constitution          INTEGER,
+        intelligence          INTEGER,
+        wisdom                INTEGER,
+        charisma              INTEGER,
+        pb                    INTEGER,
+        proficiencies         JSONB DEFAULT '[]',
+        expertise             JSONB DEFAULT '[]',
+        weapon_mastery        JSONB DEFAULT '[]',
+        spellcasting_ability  TEXT,
+        spells_known          JSONB DEFAULT '[]',
+        spells_prepared       JSONB DEFAULT '[]',
+        spell_slots_total     JSONB DEFAULT '{}',
+        spell_slots_usable    JSONB DEFAULT '{}',
+        senses                TEXT,
+        languages             JSONB DEFAULT '[]',
+        damage_resistances    JSONB DEFAULT '[]',
+        damage_immunities     JSONB DEFAULT '[]',
+        condition_immunities  JSONB DEFAULT '[]',
+        features              JSONB DEFAULT '[]',
+        equipment             JSONB DEFAULT '[]',
+        notes                 TEXT,
+        created_at            TIMESTAMPTZ DEFAULT NOW(),
+        updated_at            TIMESTAMPTZ DEFAULT NOW(),
+        CONSTRAINT characters_game_slug_slug_unique UNIQUE (game_slug, slug)
+      );
+    `,
+  },
+];
+
+export default async function run_migrations(params, userSettings) {
+  const { externalDbUrl, externalDbKey } = userSettings;
+
+  const rpcUrl = `${externalDbUrl}/rest/v1/rpc/execute_migration_sql`;
+  const headers = {
+    'apikey': externalDbKey,
+    'Authorization': `Bearer ${externalDbKey}`,
+    'Content-Type': 'application/json',
+  };
+
+  const execute = async (sql) => {
+    const res = await fetch(rpcUrl, {
+      method: 'POST',
+      headers,
+      body: JSON.stringify({ sql, is_query: false }),
+    });
+    if (!res.ok) {
+      const body = await res.json().catch(() => ({ message: res.statusText }));
+      throw new Error(`SQL failed: ${body.message ?? body.hint ?? JSON.stringify(body)}`);
+    }
+  };
+
+  const query = async (sql) => {
+    const res = await fetch(rpcUrl, {
+      method: 'POST',
+      headers,
+      body: JSON.stringify({ sql, is_query: true }),
+    });
+    if (!res.ok) {
+      const body = await res.json().catch(() => ({ message: res.statusText }));
+      throw new Error(`Query failed: ${body.message ?? body.hint ?? JSON.stringify(body)}`);
+    }
+    return res.json();
+  };
+
+  await execute(`
+    CREATE TABLE IF NOT EXISTS schema_migrations (
+      version    TEXT PRIMARY KEY,
+      name       TEXT NOT NULL,
+      applied_at TIMESTAMPTZ DEFAULT NOW()
+    )
+  `);
+
+  const applied = await query('SELECT version FROM schema_migrations ORDER BY version');
+  const appliedVersions = new Set(applied.map(r => r.version));
+
+  const results = [];
+  for (const migration of MIGRATIONS) {
+    if (appliedVersions.has(migration.version)) {
+      results.push(`${migration.version} (${migration.name}): already applied`);
+      continue;
+    }
+    await execute(migration.sql);
+    await execute(
+      `INSERT INTO schema_migrations (version, name) VALUES ('${migration.version}', '${migration.name}')`
+    );
+    results.push(`${migration.version} (${migration.name}): applied`);
+  }
+
+  return `Migrations complete:\n${results.join('\n')}`;
+}

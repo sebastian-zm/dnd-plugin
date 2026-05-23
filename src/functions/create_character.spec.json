@@ -1,0 +1,217 @@
+{
+  "name": "create_character",
+  "description": "Creates a new player character (PC) in a game.",
+  "parameters": {
+    "type": "object",
+    "required": ["game", "slug", "name"],
+    "properties": {
+      "game": {
+        "type": "string",
+        "description": "The slug of the game this character belongs to."
+      },
+      "slug": {
+        "type": "string",
+        "description": "A unique, URL-safe identifier for this character within the game (e.g., 'thorin-ironforge'). Enforced unique per game at the database level."
+      },
+      "name": {
+        "type": "string",
+        "description": "The character's name."
+      },
+      "player": {
+        "type": "string",
+        "description": "The name of the player controlling this character."
+      },
+      "species": {
+        "type": "string",
+        "description": "The character's species (e.g., Human, Elf, Dwarf)."
+      },
+      "class_name": {
+        "type": "string",
+        "description": "The character's primary class (e.g., Fighter, Wizard, Rogue)."
+      },
+      "subclass": {
+        "type": "string",
+        "description": "The character's subclass (e.g., Champion, Evocation, Arcane Trickster)."
+      },
+      "level": {
+        "type": "integer",
+        "description": "The character's level (1–20). Defaults to 1.",
+        "minimum": 1,
+        "maximum": 20
+      },
+      "background": {
+        "type": "string",
+        "description": "The character's background (e.g., Soldier, Sage, Acolyte)."
+      },
+      "ac": {
+        "type": "integer",
+        "description": "Armor Class."
+      },
+      "max_hp": {
+        "type": "integer",
+        "description": "Maximum hit points."
+      },
+      "current_hp": {
+        "type": "integer",
+        "description": "Current hit points. Defaults to max_hp if not provided."
+      },
+      "temporary_hp": {
+        "type": "integer",
+        "description": "Temporary hit points. Defaults to 0."
+      },
+      "speeds": {
+        "type": "string",
+        "description": "Movement speeds (e.g., '30 ft., swim 30 ft.')."
+      },
+      "strength": { "type": "integer", "description": "Strength score." },
+      "dexterity": { "type": "integer", "description": "Dexterity score." },
+      "constitution": { "type": "integer", "description": "Constitution score." },
+      "intelligence": { "type": "integer", "description": "Intelligence score." },
+      "wisdom": { "type": "integer", "description": "Wisdom score." },
+      "charisma": { "type": "integer", "description": "Charisma score." },
+      "pb": {
+        "type": "integer",
+        "description": "Proficiency bonus."
+      },
+      "proficiencies": {
+        "type": "array",
+        "description": "Saving throw and skill proficiencies.",
+        "items": {
+          "type": "string",
+          "enum": [
+            "Strength Save", "Dexterity Save", "Constitution Save",
+            "Intelligence Save", "Wisdom Save", "Charisma Save",
+            "Acrobatics", "Animal Handling", "Arcana", "Athletics",
+            "Deception", "History", "Insight", "Intimidation",
+            "Investigation", "Medicine", "Nature", "Perception",
+            "Performance", "Persuasion", "Religion", "Sleight of Hand",
+            "Stealth", "Survival"
+          ]
+        }
+      },
+      "expertise": {
+        "type": "array",
+        "description": "Skills the character has expertise in (double proficiency bonus).",
+        "items": {
+          "type": "string",
+          "enum": [
+            "Acrobatics", "Animal Handling", "Arcana", "Athletics",
+            "Deception", "History", "Insight", "Intimidation",
+            "Investigation", "Medicine", "Nature", "Perception",
+            "Performance", "Persuasion", "Religion", "Sleight of Hand",
+            "Stealth", "Survival"
+          ]
+        }
+      },
+      "weapon_mastery": {
+        "type": "array",
+        "description": "Weapons the character has mastery with (D&D 2024).",
+        "items": {
+          "type": "string",
+          "enum": [
+            "Club", "Dagger", "Greatclub", "Handaxe", "Javelin",
+            "Light Hammer", "Mace", "Quarterstaff", "Sickle", "Spear",
+            "Dart", "Light Crossbow", "Shortbow", "Sling",
+            "Battleaxe", "Flail", "Glaive", "Greataxe", "Greatsword",
+            "Halberd", "Lance", "Longsword", "Maul", "Morningstar",
+            "Pike", "Rapier", "Scimitar", "Shortsword", "Trident",
+            "War Pick", "Warhammer", "Whip",
+            "Blowgun", "Hand Crossbow", "Heavy Crossbow", "Longbow",
+            "Musket", "Pistol"
+          ]
+        }
+      },
+      "spellcasting_ability": {
+        "type": "string",
+        "description": "The ability score used for spellcasting.",
+        "enum": ["Strength", "Dexterity", "Constitution", "Intelligence", "Wisdom", "Charisma"]
+      },
+      "spells_known": {
+        "type": "array",
+        "description": "Spells the character knows (spontaneous casters).",
+        "items": { "type": "string" }
+      },
+      "spells_prepared": {
+        "type": "array",
+        "description": "Spells the character has prepared.",
+        "items": { "type": "string" }
+      },
+      "spell_slots_total": {
+        "type": "object",
+        "description": "Total spell slots per level (1–9) per day.",
+        "properties": {
+          "1": { "type": "integer" }, "2": { "type": "integer" },
+          "3": { "type": "integer" }, "4": { "type": "integer" },
+          "5": { "type": "integer" }, "6": { "type": "integer" },
+          "7": { "type": "integer" }, "8": { "type": "integer" },
+          "9": { "type": "integer" }
+        }
+      },
+      "spell_slots_usable": {
+        "type": "object",
+        "description": "Remaining spell slots per level (1–9). Defaults to spell_slots_total if not provided.",
+        "properties": {
+          "1": { "type": "integer" }, "2": { "type": "integer" },
+          "3": { "type": "integer" }, "4": { "type": "integer" },
+          "5": { "type": "integer" }, "6": { "type": "integer" },
+          "7": { "type": "integer" }, "8": { "type": "integer" },
+          "9": { "type": "integer" }
+        }
+      },
+      "senses": {
+        "type": "string",
+        "description": "Special senses (e.g., 'Darkvision 60 ft., Passive Perception 14')."
+      },
+      "languages": {
+        "type": "array",
+        "description": "Languages the character speaks.",
+        "items": {
+          "type": "string",
+          "enum": [
+            "Common", "Common Sign Language", "Dwarvish", "Elvish", "Giant",
+            "Gnomish", "Goblin", "Halfling", "Orcish", "Abyssal", "Celestial",
+            "Deep Speech", "Draconic", "Druidic", "Infernal", "Primordial",
+            "Aquan", "Auran", "Ignan", "Terran", "Sylvan", "Thieves' Cant",
+            "Undercommon"
+          ]
+        }
+      },
+      "damage_resistances": {
+        "type": "array",
+        "description": "Damage types the character is resistant to.",
+        "items": { "type": "string" }
+      },
+      "damage_immunities": {
+        "type": "array",
+        "description": "Damage types the character is immune to.",
+        "items": { "type": "string" }
+      },
+      "condition_immunities": {
+        "type": "array",
+        "description": "Conditions the character is immune to.",
+        "items": { "type": "string" }
+      },
+      "features": {
+        "type": "array",
+        "description": "Class features, subclass features, feats, and background abilities.",
+        "items": {
+          "type": "object",
+          "properties": {
+            "name": { "type": "string" },
+            "description": { "type": "string" }
+          },
+          "required": ["name", "description"]
+        }
+      },
+      "equipment": {
+        "type": "array",
+        "description": "Equipment and items carried by the character.",
+        "items": { "type": "string" }
+      },
+      "notes": {
+        "type": "string",
+        "description": "Freeform notes about the character."
+      }
+    }
+  }
+}

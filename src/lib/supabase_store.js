@@ -12,22 +12,54 @@ export class SupabaseStore {
     };
   }
 
+  #throwError(context, body) {
+    const detail = body.detail ? ` Detail: ${body.detail}` : '';
+    const err = new Error(`${context}: ${body.message ?? JSON.stringify(body)}${detail}`);
+    err.code = body.code;
+    throw err;
+  }
+
+  async #checkResponse(res, context) {
+    if (!res.ok) {
+      const body = await res.json().catch(() => ({ message: res.statusText }));
+      this.#throwError(context, body);
+    }
+  }
+
+  async insert(table, record) {
+    const res = await fetch(`${this.url}/rest/v1/${table}`, {
+      method: 'POST',
+      headers: { ...this.#headers, 'Prefer': 'return=representation' },
+      body: JSON.stringify(record),
+    });
+    await this.#checkResponse(res, `insert ${table}`);
+    const data = await res.json();
+    return data[0];
+  }
+
   async upsert(table, record) {
     const res = await fetch(`${this.url}/rest/v1/${table}`, {
       method: 'POST',
       headers: { ...this.#headers, 'Prefer': 'resolution=merge-duplicates,return=representation' },
       body: JSON.stringify(record),
     });
-    if (!res.ok) throw new Error(`Supabase upsert failed: ${await res.text()}`);
+    await this.#checkResponse(res, `upsert ${table}`);
     const data = await res.json();
     return data[0];
   }
 
-  async get(table, id) {
-    const res = await fetch(`${this.url}/rest/v1/${table}?id=eq.${id}&limit=1`, {
-      headers: this.#headers,
-    });
-    if (!res.ok) throw new Error(`Supabase get failed: ${await res.text()}`);
+  async get(table, idOrSlug, gameSlug) {
+    const isUuid = /^[0-9a-f]{8}-(?:[0-9a-f]{4}-){3}[0-9a-f]{12}$/i.test(idOrSlug);
+    let url = `${this.url}/rest/v1/${table}?`;
+    if (isUuid) {
+      url += `id=eq.${idOrSlug}`;
+    } else {
+      url += `slug=eq.${encodeURIComponent(idOrSlug)}`;
+      if (gameSlug) url += `&game_slug=eq.${encodeURIComponent(gameSlug)}`;
+    }
+    url += '&limit=1';
+    const res = await fetch(url, { headers: this.#headers });
+    await this.#checkResponse(res, `get ${table}`);
     const data = await res.json();
     return data[0] ?? null;
   }
@@ -39,8 +71,19 @@ export class SupabaseStore {
     const res = await fetch(`${this.url}/rest/v1/${table}${query ? `?${query}` : ''}`, {
       headers: this.#headers,
     });
-    if (!res.ok) throw new Error(`Supabase list failed: ${await res.text()}`);
+    await this.#checkResponse(res, `list ${table}`);
     return res.json();
+  }
+
+  async patch(table, id, changes) {
+    const res = await fetch(`${this.url}/rest/v1/${table}?id=eq.${id}`, {
+      method: 'PATCH',
+      headers: { ...this.#headers, 'Prefer': 'return=representation' },
+      body: JSON.stringify(changes),
+    });
+    await this.#checkResponse(res, `patch ${table}`);
+    const data = await res.json();
+    return data[0];
   }
 
   async delete(table, id) {
@@ -48,6 +91,6 @@ export class SupabaseStore {
       method: 'DELETE',
       headers: this.#headers,
     });
-    if (!res.ok) throw new Error(`Supabase delete failed: ${await res.text()}`);
+    await this.#checkResponse(res, `delete ${table}`);
   }
 }

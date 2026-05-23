@@ -1,0 +1,22 @@
+{
+  "name": "create_game",
+  "description": "Creates a new D&D game session. All other functions require a game slug, so this must be called first.",
+  "parameters": {
+    "type": "object",
+    "required": ["slug", "name"],
+    "properties": {
+      "slug": {
+        "type": "string",
+        "description": "A unique, URL-safe identifier for the game (e.g., 'lost-mines-2024'). Used to reference this game in all other function calls."
+      },
+      "name": {
+        "type": "string",
+        "description": "The display name of the game (e.g., 'Lost Mines of Phandelver')."
+      },
+      "description": {
+        "type": "string",
+        "description": "Optional notes or description for the game."
+      }
+    }
+  }
+}

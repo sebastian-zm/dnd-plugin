@@ -4,7 +4,7 @@ This project is a TypingMind plugin that acts as a Dungeon Master for Dungeons &
 
 The plugin is configured through `src/main.json` and its capabilities are described in `src/overview.md`. The core logic of the plugin is implemented as a set of "plugin functions" located in the `src/functions` directory. Each function consists of a `.spec.json` file defining its interface and a `.js` file for its implementation.
 
-An optional external database can be configured to persist game state across sessions.
+Game state is persisted in a Supabase (PostgreSQL) database configured by the user via plugin settings.
 
 # Building and Running
 
@@ -30,6 +30,28 @@ Documentation on the TypingMind plugin format, JSON schema, function signatures,
 
 - `docs/typingmind_plugins/json_schema.md` — Full JSON schema for the plugin file format.
 - `docs/typingmind_plugins/plugin_concepts.md` — How plugins work: execution model, implementation types, naming rules, output types, permissions.
+
+# Data Layer
+
+## Supabase Store
+
+All persistence goes through `src/lib/supabase_store.js`, which wraps the Supabase REST API (PostgREST). It exposes four methods: `upsert`, `get`, `list`, and `delete`. Errors from Supabase are thrown as structured `Error` objects with a `.code` property containing the PostgreSQL error code (e.g. `42P01` for missing table, `42703` for missing column).
+
+## Migrations
+
+Database schema is managed through an embedded migration system in `src/functions/run_migrations.js`. Migrations are defined as an ordered array of `{ version, name, sql }` objects directly in that file. Applied migrations are tracked in a `schema_migrations` table in the database.
+
+**When to call `run_migrations`**: The LLM is instructed to call it when a schema error is detected. Functions that write to the database catch Postgres error codes `42P01` and `42703` and return a message telling the LLM to call `run_migrations` and retry.
+
+**Running migrations** requires a Supabase personal access token (`supabaseAccessToken` user setting) because DDL statements must go through the Supabase Management API (`api.supabase.com`), not the project's REST API. The project ref is extracted automatically from the `externalDbUrl` setting.
+
+**Adding a new migration**: append a new entry to the `MIGRATIONS` array in `run_migrations.js`. Use a UTC timestamp as the version to ensure correct ordering:
+
+```bash
+date -u +%Y%m%d%H%M%S
+``` The SQL must be idempotent (use `IF NOT EXISTS`, `IF EXISTS`, etc.) since the migration runner only checks the version, not the content.
+
+**Keeping migrations in sync with the NPC object**: when adding or renaming fields on the NPC object in `create_npc.js` or `create_npc.spec.json`, add a corresponding `ALTER TABLE` migration so the schema stays consistent. Never modify the SQL of an already-applied migration.
 
 # Development Conventions
 

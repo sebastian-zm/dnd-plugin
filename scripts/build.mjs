@@ -6,7 +6,9 @@ const SRC_DIR = 'src';
 const DIST_DIR = 'dist';
 const FUNCTIONS_DIR = path.join(SRC_DIR, 'functions');
 
-async function bundleFunction(name) {
+const PREFIX = 'dnd5e24_';
+
+async function bundleFunction(name, prefixedName) {
   const entry = path.join(FUNCTIONS_DIR, `${name}.js`);
 
   const result = await esbuild.build({
@@ -19,7 +21,7 @@ async function bundleFunction(name) {
     target: 'es2020',
     minify: true,
     footer: {
-      js: `function ${name}(params, userSettings){return __plugin.default(params, userSettings)}`,
+      js: `function ${prefixedName}(params, userSettings){return __plugin.default(params, userSettings)}`,
     },
   });
 
@@ -43,14 +45,15 @@ async function build() {
 
     const pluginFunctions = await Promise.all(
       functionNames.map(async (name) => {
+        const prefixedName = `${PREFIX}${name}`;
         const specPath = path.join(FUNCTIONS_DIR, `${name}.spec.json`);
         const spec = JSON.parse(await fs.readFile(specPath, 'utf-8'));
-        const code = await bundleFunction(name);
+        const code = await bundleFunction(name, prefixedName);
 
         return {
           id: `dnd-${name}-${Date.now()}`,
-          name,
-          openaiSpec: spec,
+          name: prefixedName,
+          openaiSpec: { ...spec, name: prefixedName },
           code,
           implementationType: 'javascript',
           outputType: 'respond_to_ai',

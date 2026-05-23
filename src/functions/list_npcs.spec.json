@@ -1,0 +1,14 @@
+{
+  "name": "list_npcs",
+  "description": "Lists all NPCs in a game.",
+  "parameters": {
+    "type": "object",
+    "required": ["game"],
+    "properties": {
+      "game": {
+        "type": "string",
+        "description": "The slug of the game."
+      }
+    }
+  }
+}

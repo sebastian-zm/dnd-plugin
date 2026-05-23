@@ -1,9 +1,18 @@
 {
   "name": "create_npc",
-  "description": "Creates a new Non-Player Character (NPC) for the game.",
+  "description": "Creates a new Non-Player Character (NPC) within a game.",
   "parameters": {
     "type": "object",
+    "required": ["game", "slug", "name"],
     "properties": {
+      "game": {
+        "type": "string",
+        "description": "The slug of the game this NPC belongs to."
+      },
+      "slug": {
+        "type": "string",
+        "description": "A unique, URL-safe identifier for this NPC within the game (e.g., 'goblin-king'). Enforced unique per game at the database level."
+      },
       "name": {
         "type": "string",
         "description": "The name of the NPC."
@@ -463,6 +472,6 @@
         "description": "Freeform DM notes about the NPC."
       }
     },
-    "required": []
+    "required": ["game", "slug", "name"]
   }
 }
