@@ -5,6 +5,7 @@
   "type": "module",
   "scripts": {
     "build": "node scripts/build.mjs",
+    "copy": "node scripts/copy.mjs",
     "lint": "eslint ."
   },
   "keywords": [
@@ -15,6 +16,7 @@
   "license": "ISC",
   "devDependencies": {
     "@eslint/js": "^10.0.1",
+    "clipboardy": "^5.3.1",
     "esbuild": "^0.28.0",
     "eslint": "^10.4.0"
   }
