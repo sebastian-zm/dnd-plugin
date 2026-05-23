@@ -75,16 +75,21 @@ export class SupabaseStore {
     return res.json();
   }
 
-  async patch(table, id, changes) {
+  async patch(table, id, changes, updatedAt) {
     const body = { ...changes, updated_at: new Date().toISOString() };
-    const res = await fetch(`${this.url}/rest/v1/${table}?id=eq.${encodeURIComponent(id)}`, {
+    let url = `${this.url}/rest/v1/${table}?id=eq.${encodeURIComponent(id)}`;
+    if (updatedAt !== undefined) {
+      url += `&updated_at=eq.${encodeURIComponent(updatedAt)}`;
+    }
+    const res = await fetch(url, {
       method: 'PATCH',
       headers: { ...this.#headers, 'Prefer': 'return=representation' },
       body: JSON.stringify(body),
     });
     await this.#checkResponse(res, `patch ${table}`);
     const data = await res.json();
-    return data[0];
+    // When updatedAt is supplied, 0 rows means a concurrent write landed first — return null so callers can retry.
+    return updatedAt !== undefined ? (data[0] ?? null) : data[0];
   }
 
   async delete(table, id) {
