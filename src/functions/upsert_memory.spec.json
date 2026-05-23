@@ -1,0 +1,26 @@
+{
+  "name": "upsert_memory",
+  "description": "Creates or updates a named memory for a game. If a memory with the given slug already exists, its name and/or text are updated. Use this to record world lore, NPC decisions, plot developments, or anything the DM should remember across sessions.",
+  "parameters": {
+    "type": "object",
+    "required": ["game", "slug", "name", "memory"],
+    "properties": {
+      "game": {
+        "type": "string",
+        "description": "The slug of the game this memory belongs to."
+      },
+      "slug": {
+        "type": "string",
+        "description": "A unique, URL-safe identifier for this memory within the game (e.g., 'mayor-betrayal'). Used to update or delete the memory later."
+      },
+      "name": {
+        "type": "string",
+        "description": "A short descriptive label for the memory (e.g., 'Mayor Thornwick betrayed the party')."
+      },
+      "memory": {
+        "type": "string",
+        "description": "The full memory text."
+      }
+    }
+  }
+}

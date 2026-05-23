@@ -138,6 +138,22 @@ const MIGRATIONS = [
       UPDATE npcs SET game_slug = id::text WHERE game_slug = '';
     `,
   },
+  {
+    version: '20260523140000',
+    name: 'create_game_memories_table',
+    sql: `
+      CREATE TABLE IF NOT EXISTS game_memories (
+        id         UUID PRIMARY KEY,
+        game_slug  TEXT NOT NULL,
+        slug       TEXT NOT NULL,
+        name       TEXT NOT NULL,
+        memory     TEXT NOT NULL,
+        created_at TIMESTAMPTZ DEFAULT NOW(),
+        updated_at TIMESTAMPTZ DEFAULT NOW(),
+        CONSTRAINT game_memories_game_slug_slug_unique UNIQUE (game_slug, slug)
+      );
+    `,
+  },
 ];
 
 export default async function run_migrations(params, userSettings) {

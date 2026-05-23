@@ -1,0 +1,14 @@
+{
+  "name": "list_memories",
+  "description": "Lists all memories for a game, returning id, slug, name, and full memory text. Call this at the start of every session to load the game's lore and context before narrating.",
+  "parameters": {
+    "type": "object",
+    "required": ["game"],
+    "properties": {
+      "game": {
+        "type": "string",
+        "description": "The slug of the game."
+      }
+    }
+  }
+}
