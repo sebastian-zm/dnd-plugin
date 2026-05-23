@@ -1,0 +1,14 @@
+{
+  "name": "delete_game",
+  "description": "Deletes a game and all its associated data (characters, NPCs, memories) by slug. This is irreversible.",
+  "parameters": {
+    "type": "object",
+    "required": ["slug"],
+    "properties": {
+      "slug": {
+        "type": "string",
+        "description": "The slug of the game to delete."
+      }
+    }
+  }
+}

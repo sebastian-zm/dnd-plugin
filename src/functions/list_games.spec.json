@@ -1,0 +1,9 @@
+{
+  "name": "list_games",
+  "description": "Lists all games with a summary (slug, name, description).",
+  "parameters": {
+    "type": "object",
+    "required": [],
+    "properties": {}
+  }
+}
