@@ -154,6 +154,14 @@ const MIGRATIONS = [
       );
     `,
   },
+  {
+    version: '20260523150000',
+    name: 'add_gold_to_characters_and_npcs',
+    sql: `
+      ALTER TABLE characters ADD COLUMN IF NOT EXISTS gold NUMERIC(12,4) NOT NULL DEFAULT 0;
+      ALTER TABLE npcs       ADD COLUMN IF NOT EXISTS gold NUMERIC(12,4) NOT NULL DEFAULT 0;
+    `,
+  },
 ];
 
 export default async function run_migrations(params, userSettings) {
