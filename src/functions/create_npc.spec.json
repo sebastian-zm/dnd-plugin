@@ -469,6 +469,11 @@
       "notes": {
         "type": "string",
         "description": "Freeform DM notes about the NPC."
+      },
+      "gold": {
+        "type": "number",
+        "description": "The NPC's wealth in gold pieces (GP). Fractional values represent electrum, silver, and copper equivalents.",
+        "minimum": 0
       }
     },
     "required": ["game", "slug", "name"]

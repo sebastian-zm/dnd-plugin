@@ -45,6 +45,7 @@ export default async function create_npc(params, userSettings) {
     lair_actions,
     equipment,
     notes,
+    gold,
   } = params;
 
   const id = crypto.randomUUID();
@@ -94,6 +95,7 @@ export default async function create_npc(params, userSettings) {
     lair_actions: lair_actions ?? [],
     equipment: equipment ?? [],
     notes,
+    gold: gold ?? 0,
   };
 
   const store = new SupabaseStore(userSettings.externalDbUrl, userSettings.externalDbKey);

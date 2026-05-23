@@ -234,6 +234,11 @@
       "notes": {
         "type": "string",
         "description": "Freeform notes about the character."
+      },
+      "gold": {
+        "type": "number",
+        "description": "The character's wealth in gold pieces (GP). Fractional values represent electrum, silver, and copper equivalents.",
+        "minimum": 0
       }
     }
   }

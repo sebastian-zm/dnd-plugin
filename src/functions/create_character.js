@@ -39,6 +39,7 @@ export default async function create_character(params, userSettings) {
     features,
     equipment,
     notes,
+    gold,
   } = params;
 
   const id = crypto.randomUUID();
@@ -82,6 +83,7 @@ export default async function create_character(params, userSettings) {
     features: features ?? [],
     equipment: equipment ?? [],
     notes,
+    gold: gold ?? 0,
   };
 
   const store = new SupabaseStore(userSettings.externalDbUrl, userSettings.externalDbKey);
