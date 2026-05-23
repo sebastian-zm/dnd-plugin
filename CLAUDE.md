@@ -45,11 +45,13 @@ Database schema is managed through an embedded migration system in `src/function
 
 **Running migrations** calls the `execute_migration_sql` PostgreSQL function (created by the user during setup — see `overview.md`) via the project's PostgREST endpoint using the `service_role` key. The function runs arbitrary SQL with `SECURITY DEFINER` so DDL works; only the `service_role` key can invoke it. The Management API is not used.
 
-**Adding a new migration**: append a new entry to the `MIGRATIONS` array in `run_migrations.js`. Use a UTC timestamp as the version to ensure correct ordering:
+**Adding a new migration**: append a new entry to the `MIGRATIONS` array in `run_migrations.js`. Use a UTC timestamp as the version to ensure correct ordering. **Always run the following command first to get the current UTC timestamp before writing the migration version:**
 
 ```bash
 date -u +%Y%m%d%H%M%S
-``` The SQL must be idempotent (use `IF NOT EXISTS`, `IF EXISTS`, etc.) since the migration runner only checks the version, not the content.
+```
+
+The SQL must be idempotent (use `IF NOT EXISTS`, `IF EXISTS`, etc.) since the migration runner only checks the version, not the content.
 
 **Keeping migrations in sync with the stat-block objects**: when adding or renaming fields on the NPC or character objects (`create_npc.js` / `create_npc.spec.json` / `create_character.js` / `create_character.spec.json`), add a corresponding `ALTER TABLE` migration so the schema stays consistent. Never modify the SQL of an already-applied migration — add a new one instead.
 
