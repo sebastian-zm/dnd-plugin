@@ -10,14 +10,16 @@ export default async function delete_game(params, userSettings) {
       return `No game with slug "${slug}" found.`;
     }
 
-    const confirmation = window.prompt(
-      `Type the game name to confirm deletion:\n\n"${existing.name}"`
-    );
-    if (confirmation === null) {
-      return 'Deletion cancelled.';
-    }
-    if (confirmation !== existing.name) {
-      return `Deletion cancelled: "${confirmation}" does not match the game name "${existing.name}".`;
+    if (typeof window !== 'undefined') {
+      const confirmation = window.prompt(
+        `Type the game name to confirm deletion:\n\n"${existing.name}"`
+      );
+      if (confirmation === null) {
+        return 'Deletion cancelled.';
+      }
+      if (confirmation !== existing.name) {
+        return `Deletion cancelled: "${confirmation}" does not match the game name "${existing.name}".`;
+      }
     }
 
     await store.delete('games', existing.id);

@@ -1,0 +1,18 @@
+{
+  "name": "delete_character",
+  "description": "Permanently deletes a player character from a game by slug. This is irreversible.",
+  "parameters": {
+    "type": "object",
+    "required": ["game", "slug"],
+    "properties": {
+      "game": {
+        "type": "string",
+        "description": "The slug of the game the character belongs to."
+      },
+      "slug": {
+        "type": "string",
+        "description": "The slug of the character to delete."
+      }
+    }
+  }
+}

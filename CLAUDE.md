@@ -24,6 +24,24 @@ This will generate the final plugin file at `dist/dnd-plugin.json`. This file is
 
 The plugin is intended to be loaded manually into TypingMind for execution.
 
+## Additional Build Targets
+
+### MCP Server (`build:mcp`)
+
+```bash
+npm run build:mcp
+```
+
+Produces `dist/mcp-server.mjs`: a self-contained Node.js MCP server that exposes all plugin functions as MCP tools over JSON-RPC via stdin/stdout. Supabase credentials are read from the `SUPABASE_URL` and `SUPABASE_KEY` environment variables. Use this to run the plugin locally or integrate it with any MCP-compatible host (e.g. Claude Desktop via a manual `mcpServers` config entry).
+
+### Claude Desktop Extension Bundle (`build:mcpb`)
+
+```bash
+npm run build:mcpb
+```
+
+Produces `dist/dnd-plugin.mcpb`: a zip archive (Claude Desktop extension format) that bundles the MCP server together with `src/manifest.json` and `src/assets/icon.svg`. The manifest declares the server entry point and prompts the user for their Supabase URL and service-role key at install time. This file can be loaded directly into Claude Desktop as an extension. Running `build:mcpb` automatically rebuilds the MCP server first.
+
 # TypingMind Plugin Reference
 
 Documentation on the TypingMind plugin format, JSON schema, function signatures, output types, permissions, and deployment is in `docs/typingmind_plugins/`:
