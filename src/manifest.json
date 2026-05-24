@@ -1,0 +1,41 @@
+{
+  "manifest_version": "0.3",
+  "name": "dnd-plugin",
+  "display_name": "D&D Dungeon Master",
+  "version": "1.0.0",
+  "description": "A Dungeon Master assistant for D&D 2024 (5.5e). Manages games, characters, HP tracking, and combat.",
+  "author": {
+    "name": "Sebastián"
+  },
+  "icon": "icon.svg",
+  "license": "ISC",
+  "keywords": ["dnd", "dungeons-and-dragons", "rpg", "dungeon-master", "5e"],
+  "server": {
+    "type": "node",
+    "entry_point": "server/index.mjs",
+    "mcp_config": {
+      "command": "node",
+      "args": ["${__dirname}/server/index.mjs"],
+      "env": {
+        "SUPABASE_URL": "${user_config.supabase_url}",
+        "SUPABASE_KEY": "${user_config.supabase_key}"
+      }
+    }
+  },
+  "user_config": {
+    "supabase_url": {
+      "type": "string",
+      "title": "Supabase URL",
+      "description": "URL for your Supabase project. Found under Project Settings → API.",
+      "required": true
+    },
+    "supabase_key": {
+      "type": "string",
+      "title": "Supabase Service Role Key",
+      "description": "service_role API key for your Supabase project. Found under Project Settings → API → Project API keys.",
+      "required": true,
+      "sensitive": true
+    }
+  },
+  "tools_generated": true
+}

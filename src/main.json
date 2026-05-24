@@ -2,8 +2,7 @@
     "id": "dnd-plugin-v1",
     "uuid": "a1b2c3d4-e5f6-7890-1234-567890abcdef",
     "title": "D&D Dungeon Master",
-    "iconURL": "https://raw.githubusercontent.com/your-username/dnd-plugin/main/src/assets/icon.png",
-    "githubURL": "https://github.com/your-username/dnd-plugin",
+    "iconURL": "https://raw.githubusercontent.com/sebastian-zm/dnd-plugin/main/src/assets/icon.svg",
     "userSettings": [
         {
             "name": "externalDbUrl",

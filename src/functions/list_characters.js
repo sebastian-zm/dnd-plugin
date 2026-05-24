@@ -18,16 +18,5 @@ export default async function list_characters(params, userSettings) {
     return `No characters found in game "${game}".`;
   }
 
-  const summary = characters.map(c => ({
-    slug: c.slug,
-    name: c.name,
-    player: c.player,
-    class_name: c.class_name,
-    level: c.level,
-    ac: c.ac,
-    current_hp: c.current_hp,
-    max_hp: c.max_hp,
-    temporary_hp: c.temporary_hp,
-  }));
-  return JSON.stringify(summary);
+  return JSON.stringify(characters);
 }

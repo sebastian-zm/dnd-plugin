@@ -1,6 +1,6 @@
 {
   "name": "list_characters",
-  "description": "Lists all player characters in a game with a summary (slug, name, player, class, level, AC, HP). For a full sheet, look up the character by slug.",
+  "description": "Lists all player characters in a game with their full stat blocks.",
   "parameters": {
     "type": "object",
     "required": ["game"],
