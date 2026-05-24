@@ -99,4 +99,16 @@ export class SupabaseStore {
     });
     await this.#checkResponse(res, `delete ${table}`);
   }
+
+  async deleteWhere(table, filters = {}) {
+    const query = Object.entries(filters)
+      .map(([k, v]) => `${k}=eq.${encodeURIComponent(v)}`)
+      .join('&');
+    if (!query) throw new Error('deleteWhere requires at least one filter');
+    const res = await fetch(`${this.url}/rest/v1/${table}?${query}`, {
+      method: 'DELETE',
+      headers: this.#headers,
+    });
+    await this.#checkResponse(res, `deleteWhere ${table}`);
+  }
 }

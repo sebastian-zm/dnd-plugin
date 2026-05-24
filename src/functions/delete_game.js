@@ -24,6 +24,11 @@ export default async function delete_game(params, userSettings) {
     }
   }
 
+  await Promise.all([
+    store.deleteWhere('characters', { game_slug: slug }),
+    store.deleteWhere('npcs', { game_slug: slug }),
+    store.deleteWhere('game_memories', { game_slug: slug }),
+  ]);
   await store.delete('games', existing.id);
   return `Game "${existing.name}" (${slug}) deleted.`;
 }
