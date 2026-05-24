@@ -57,13 +57,13 @@ All persistence goes through `src/lib/supabase_store.js`, which wraps the Supaba
 
 ## Migrations
 
-Database schema is managed through an embedded migration system in `src/functions/run_migrations.js`. Migrations are defined as an ordered array of `{ version, name, sql }` objects directly in that file. Applied migrations are tracked in a `schema_migrations` table in the database.
+Database schema is managed through an embedded migration system in `src/lib/migrations.js`. Migrations are defined as an ordered array of `{ version, name, sql }` objects directly in that file. Applied migrations are tracked in a `schema_migrations` table in the database.
 
-**When to call `run_migrations`**: The LLM is instructed to call it when a schema error is detected. Functions that write to the database catch Postgres error codes `42P01` and `42703` and return a message telling the LLM to call `run_migrations` and retry.
+**Migrations run automatically**: every function calls `ensureMigrations()` at startup, which applies any pending migrations before touching the database. There is no separate `run_migrations` tool — the LLM never needs to trigger migrations manually.
 
 **Running migrations** calls the `execute_migration_sql` PostgreSQL function (created by the user during setup — see `overview.md`) via the project's PostgREST endpoint using the `service_role` key. The function runs arbitrary SQL with `SECURITY DEFINER` so DDL works; only the `service_role` key can invoke it. The Management API is not used.
 
-**Adding a new migration**: append a new entry to the `MIGRATIONS` array in `run_migrations.js`. Use a UTC timestamp as the version to ensure correct ordering. **Always run the following command first to get the current UTC timestamp before writing the migration version:**
+**Adding a new migration**: append a new entry to the `MIGRATIONS` array in `migrations.js`. Use a UTC timestamp as the version to ensure correct ordering. **Always run the following command first to get the current UTC timestamp before writing the migration version:**
 
 ```bash
 date -u +%Y%m%d%H%M%S
@@ -71,7 +71,7 @@ date -u +%Y%m%d%H%M%S
 
 The SQL must be idempotent (use `IF NOT EXISTS`, `IF EXISTS`, etc.) since the migration runner only checks the version, not the content.
 
-**Keeping migrations in sync with the stat-block objects**: when adding or renaming fields on the NPC or character objects (`create_npc.js` / `create_npc.spec.json` / `create_character.js` / `create_character.spec.json`), add a corresponding `ALTER TABLE` migration so the schema stays consistent. Never modify the SQL of an already-applied migration — add a new one instead.
+**Keeping migrations in sync with the stat-block objects**: when adding or renaming fields on the NPC or character objects (`upsert_npc.js` / `upsert_npc.spec.json` / `upsert_character.js` / `upsert_character.spec.json`), add a corresponding `ALTER TABLE` migration so the schema stays consistent. Never modify the SQL of an already-applied migration — add a new one instead.
 
 # Development Conventions
 
