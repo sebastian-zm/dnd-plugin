@@ -39,7 +39,7 @@ export default async function upsert_npc(params, userSettings) {
     proficiencies, expertise, weapon_mastery, spellcasting_ability, spells_known,
     spells_prepared, spell_slots_total, spell_slots_usable, senses, languages, cr,
     damage_resistances, damage_immunities, damage_vulnerabilities, condition_immunities,
-    traits, actions, bonus_actions, reactions, legendary_resistances, legendary_actions,
+    conditions, traits, actions, bonus_actions, reactions, legendary_resistances, legendary_actions,
     lair_actions, equipment, notes, gold,
   } = rest;
 
@@ -79,6 +79,7 @@ export default async function upsert_npc(params, userSettings) {
     damage_immunities: damage_immunities ?? [],
     damage_vulnerabilities: damage_vulnerabilities ?? [],
     condition_immunities: condition_immunities ?? [],
+    conditions: conditions ?? [],
     traits: traits ?? [],
     actions: actions ?? [],
     bonus_actions: bonus_actions ?? [],

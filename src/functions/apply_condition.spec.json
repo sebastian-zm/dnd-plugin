@@ -1,0 +1,27 @@
+{
+  "name": "apply_condition",
+  "description": "Applies a condition to a character or NPC. Standard D&D 2024 conditions: Blinded, Charmed, Deafened, Frightened, Grappled, Incapacitated, Invisible, Paralyzed, Petrified, Poisoned, Prone, Restrained, Stunned, Unconscious. Exhaustion is tracked with its level (e.g. 'Exhaustion 1', 'Exhaustion 2'). Returns an error if the condition is already active.",
+  "parameters": {
+    "type": "object",
+    "required": ["game", "entity_type", "entity", "condition"],
+    "properties": {
+      "game": {
+        "type": "string",
+        "description": "The slug of the game."
+      },
+      "entity_type": {
+        "type": "string",
+        "enum": ["character", "npc"],
+        "description": "Whether the target is a player character or an NPC."
+      },
+      "entity": {
+        "type": "string",
+        "description": "The slug or name of the target character or NPC."
+      },
+      "condition": {
+        "type": "string",
+        "description": "The condition to apply (e.g. 'Prone', 'Poisoned', 'Exhaustion 1')."
+      }
+    }
+  }
+}

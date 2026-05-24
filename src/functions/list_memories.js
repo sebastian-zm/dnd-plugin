@@ -6,6 +6,12 @@ export default async function list_memories(params, userSettings) {
 
   const { game } = params;
   const store = new SupabaseStore(userSettings.externalDbUrl, userSettings.externalDbKey);
+
+  const gameRecord = await store.get('games', game);
+  if (!gameRecord) {
+    return `No game found with slug "${game}".`;
+  }
+
   const memories = await store.list('game_memories', { game_slug: game });
 
   if (memories.length === 0) {

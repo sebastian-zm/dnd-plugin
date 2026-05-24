@@ -169,6 +169,14 @@ const MIGRATIONS = [
       ALTER TABLE characters ADD COLUMN IF NOT EXISTS damage_vulnerabilities JSONB DEFAULT '[]';
     `,
   },
+  {
+    version: '20260524123711',
+    name: 'add_conditions_to_characters_and_npcs',
+    sql: `
+      ALTER TABLE characters ADD COLUMN IF NOT EXISTS conditions JSONB DEFAULT '[]';
+      ALTER TABLE npcs       ADD COLUMN IF NOT EXISTS conditions JSONB DEFAULT '[]';
+    `,
+  },
 ];
 
 // Module-level guard: in a persistent process (MCP server) migrations only run once.

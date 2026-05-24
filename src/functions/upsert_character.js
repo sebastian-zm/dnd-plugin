@@ -39,7 +39,7 @@ export default async function upsert_character(params, userSettings) {
     pb, proficiencies, expertise, weapon_mastery, spellcasting_ability, spells_known,
     spells_prepared, spell_slots_total, spell_slots_usable, senses, languages,
     damage_resistances, damage_immunities, damage_vulnerabilities, condition_immunities,
-    features, equipment, notes, gold,
+    conditions, features, equipment, notes, gold,
   } = rest;
 
   const character = {
@@ -79,6 +79,7 @@ export default async function upsert_character(params, userSettings) {
     damage_immunities: damage_immunities ?? [],
     damage_vulnerabilities: damage_vulnerabilities ?? [],
     condition_immunities: condition_immunities ?? [],
+    conditions: conditions ?? [],
     features: features ?? [],
     equipment: equipment ?? [],
     notes,

@@ -1,0 +1,24 @@
+{
+  "name": "use_spell_slot",
+  "description": "Expends one spell slot of the given level for a character. Decrements spell_slots_usable by 1 for the specified level. Returns an error if no slots of that level remain.",
+  "parameters": {
+    "type": "object",
+    "required": ["game", "character", "level"],
+    "properties": {
+      "game": {
+        "type": "string",
+        "description": "The slug of the game."
+      },
+      "character": {
+        "type": "string",
+        "description": "The slug or name of the character expending the slot."
+      },
+      "level": {
+        "type": "integer",
+        "description": "The spell slot level (1–9) to expend.",
+        "minimum": 1,
+        "maximum": 9
+      }
+    }
+  }
+}

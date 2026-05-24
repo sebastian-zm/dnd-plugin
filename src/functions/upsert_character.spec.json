@@ -226,6 +226,11 @@
           ]
         }
       },
+      "conditions": {
+        "type": "array",
+        "description": "Currently active conditions on the character. Standard conditions: Blinded, Charmed, Deafened, Frightened, Grappled, Incapacitated, Invisible, Paralyzed, Petrified, Poisoned, Prone, Restrained, Stunned, Unconscious. Exhaustion is tracked with its level (e.g. 'Exhaustion 1'). Prefer apply_condition and remove_condition for incremental updates.",
+        "items": { "type": "string" }
+      },
       "features": {
         "type": "array",
         "description": "Class features, subclass features, feats, and background abilities.",

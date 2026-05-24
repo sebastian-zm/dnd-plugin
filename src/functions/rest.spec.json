@@ -1,0 +1,19 @@
+{
+  "name": "rest",
+  "description": "Applies the effects of a short or long rest to all player characters in a game. Long rest: restores HP to maximum, clears temporary HP, and restores all spell slots. Short rest: restores Pact Magic spell slots for Warlock characters (the only class that recharges spell slots on a short rest in D&D 2024); other characters receive no automated changes (HP recovery via Hit Dice is handled narratively).",
+  "parameters": {
+    "type": "object",
+    "required": ["game", "rest_type"],
+    "properties": {
+      "game": {
+        "type": "string",
+        "description": "The slug of the game."
+      },
+      "rest_type": {
+        "type": "string",
+        "enum": ["short", "long"],
+        "description": "The type of rest: 'short' (1 hour) or 'long' (8 hours)."
+      }
+    }
+  }
+}
