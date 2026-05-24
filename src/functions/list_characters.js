@@ -4,7 +4,7 @@ import { ensureMigrations } from '../lib/migrations.js';
 export default async function list_characters(params, userSettings) {
   await ensureMigrations(userSettings);
 
-  const { game } = params;
+  const { game, fields } = params;
   const store = new SupabaseStore(userSettings.externalDbUrl, userSettings.externalDbKey);
   const characters = await store.list('characters', { game_slug: game });
 
@@ -12,12 +12,6 @@ export default async function list_characters(params, userSettings) {
     return `No characters found in game "${game}".`;
   }
 
-  return JSON.stringify(characters.map(c => ({
-    slug: c.slug,
-    name: c.name,
-    current_hp: c.current_hp,
-    max_hp: c.max_hp,
-    temporary_hp: c.temporary_hp,
-    ac: c.ac,
-  })));
+  const keys = fields ?? ['slug', 'name', 'current_hp', 'max_hp', 'temporary_hp', 'ac'];
+  return JSON.stringify(characters.map(c => Object.fromEntries(keys.map(k => [k, c[k]]))));
 }

@@ -1,6 +1,6 @@
 {
   "name": "list_npcs",
-  "description": "Lists all NPCs in a game with a summary (slug, name, CR, AC, HP). For a full statblock, look up the NPC by slug.",
+  "description": "Lists all NPCs in a game with a summary (slug, name, CR, AC, HP). Pass fields to request additional or different columns. For a full statblock, look up the NPC by slug.",
   "parameters": {
     "type": "object",
     "required": ["game"],
@@ -8,6 +8,11 @@
       "game": {
         "type": "string",
         "description": "The slug of the game."
+      },
+      "fields": {
+        "type": "array",
+        "items": { "type": "string" },
+        "description": "Optional list of column names to include in each result. Defaults to [slug, name, cr, ac, current_hp, max_hp, temporary_hp]."
       }
     }
   }
