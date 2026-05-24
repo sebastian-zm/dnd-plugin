@@ -1,9 +1,0 @@
-{
-  "name": "run_migrations",
-  "description": "Applies any pending database migrations. Call this when a schema error is encountered (e.g., a missing table or column) and then retry the failed operation.",
-  "parameters": {
-    "type": "object",
-    "properties": {},
-    "required": []
-  }
-}

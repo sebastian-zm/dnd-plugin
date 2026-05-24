@@ -162,11 +162,24 @@ const MIGRATIONS = [
       ALTER TABLE npcs       ADD COLUMN IF NOT EXISTS gold NUMERIC(12,4) NOT NULL DEFAULT 0;
     `,
   },
+  {
+    version: '20260524120000',
+    name: 'add_damage_vulnerabilities_to_characters',
+    sql: `
+      ALTER TABLE characters ADD COLUMN IF NOT EXISTS damage_vulnerabilities JSONB DEFAULT '[]';
+    `,
+  },
 ];
 
-export default async function run_migrations(params, userSettings) {
-  const { externalDbUrl, externalDbKey } = userSettings;
+// Module-level guard: in a persistent process (MCP server) migrations only run once.
+// In a stateless TypingMind invocation this is always false at call start, so the
+// check runs every call (2 RPC round-trips in the steady state — cheap).
+let _confirmed = false;
 
+export async function ensureMigrations(userSettings) {
+  if (_confirmed) return;
+
+  const { externalDbUrl, externalDbKey } = userSettings;
   const rpcUrl = `${externalDbUrl}/rest/v1/rpc/execute_migration_sql`;
   const headers = {
     'apikey': externalDbKey,
@@ -210,18 +223,13 @@ export default async function run_migrations(params, userSettings) {
   const applied = await query('SELECT version FROM schema_migrations ORDER BY version');
   const appliedVersions = new Set(applied.map(r => r.version));
 
-  const results = [];
   for (const migration of MIGRATIONS) {
-    if (appliedVersions.has(migration.version)) {
-      results.push(`${migration.version} (${migration.name}): already applied`);
-      continue;
-    }
+    if (appliedVersions.has(migration.version)) continue;
     await execute(migration.sql);
     await execute(
       `INSERT INTO schema_migrations (version, name) VALUES ('${migration.version}', '${migration.name}') ON CONFLICT (version) DO NOTHING`
     );
-    results.push(`${migration.version} (${migration.name}): applied`);
   }
 
-  return `Migrations complete:\n${results.join('\n')}`;
+  _confirmed = true;
 }

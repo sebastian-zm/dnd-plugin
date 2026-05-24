@@ -1,9 +1,9 @@
 {
-  "name": "create_character",
-  "description": "Creates a new player character (PC) in a game.",
+  "name": "upsert_character",
+  "description": "Creates a new player character (PC) or updates an existing one in a game. If a character with the given slug already exists in the game, only the provided fields are updated (partial update). If no slug is given, one is auto-generated from the name.",
   "parameters": {
     "type": "object",
-    "required": ["game", "slug", "name"],
+    "required": ["game", "name"],
     "properties": {
       "game": {
         "type": "string",
@@ -11,7 +11,7 @@
       },
       "slug": {
         "type": "string",
-        "description": "A unique, URL-safe identifier for this character within the game (e.g., 'thorin-ironforge'). Enforced unique per game at the database level."
+        "description": "Unique identifier for this character within the game (e.g., 'thorin-ironforge'). Auto-generated from name if omitted. Enforced unique per game."
       },
       "name": {
         "type": "string",
@@ -35,7 +35,7 @@
       },
       "level": {
         "type": "integer",
-        "description": "The character's level (1–20). Defaults to 1.",
+        "description": "The character's level (1–20). Defaults to 1 on creation.",
         "minimum": 1,
         "maximum": 20
       },
@@ -53,11 +53,11 @@
       },
       "current_hp": {
         "type": "integer",
-        "description": "Current hit points. Defaults to max_hp if not provided."
+        "description": "Current hit points. Defaults to max_hp on creation."
       },
       "temporary_hp": {
         "type": "integer",
-        "description": "Temporary hit points. Defaults to 0."
+        "description": "Temporary hit points. Defaults to 0 on creation."
       },
       "speeds": {
         "type": "string",
@@ -149,7 +149,7 @@
       },
       "spell_slots_usable": {
         "type": "object",
-        "description": "Remaining spell slots per level (1–9). Defaults to spell_slots_total if not provided.",
+        "description": "Remaining spell slots per level (1–9). Defaults to spell_slots_total on creation.",
         "properties": {
           "1": { "type": "integer" }, "2": { "type": "integer" },
           "3": { "type": "integer" }, "4": { "type": "integer" },
@@ -178,7 +178,7 @@
       },
       "damage_resistances": {
         "type": "array",
-        "description": "Damage types the character is resistant to.",
+        "description": "Damage types the character is resistant to (takes half damage).",
         "items": {
           "type": "string",
           "enum": [
@@ -191,7 +191,7 @@
       },
       "damage_immunities": {
         "type": "array",
-        "description": "Damage types the character is immune to.",
+        "description": "Damage types the character is immune to (takes no damage).",
         "items": {
           "type": "string",
           "enum": [
@@ -199,6 +199,18 @@
             "Necrotic", "Piercing", "Poison", "Psychic", "Radiant",
             "Slashing", "Thunder",
             "Nonmagical Bludgeoning", "Nonmagical Piercing", "Nonmagical Slashing"
+          ]
+        }
+      },
+      "damage_vulnerabilities": {
+        "type": "array",
+        "description": "Damage types the character is vulnerable to (takes double damage).",
+        "items": {
+          "type": "string",
+          "enum": [
+            "Acid", "Bludgeoning", "Cold", "Fire", "Force", "Lightning",
+            "Necrotic", "Piercing", "Poison", "Psychic", "Radiant",
+            "Slashing", "Thunder"
           ]
         }
       },

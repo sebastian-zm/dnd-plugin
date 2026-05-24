@@ -4,9 +4,21 @@ This plugin transforms your AI assistant into a Dungeon Master for Dungeons & Dr
 
 ### Features
 - **Game Management**: Create and persist multiple D&D games. Each game is identified by a slug used in every other call.
-- **Characters & NPCs**: Add player characters and NPCs (monsters, allies, etc.) scoped to a game, each with a unique slug.
+- **Characters & NPCs**: Add player characters and NPCs (monsters, allies, etc.) scoped to a game. Use `upsert_character` / `upsert_npc` for both creation and updates — if the slug already exists, only the fields you pass are changed. Slugs are auto-generated from the name if you omit them.
 - **HP Tracking**: Track current, max, and temporary HP for any character or NPC.
-- **Damage and Healing**: Apply damage (with temporary-HP absorption) or healing (including temporary HP) to any combatant.
+- **Damage and Healing**: Apply damage (with automatic resistance/immunity/vulnerability resolution) or healing (including temporary HP) to any combatant. Always pass the raw dice roll — the server applies the correct multiplier.
+- **Memories**: Store world lore, NPC decisions, and plot points as named memories scoped to a game.
+- **Inventory**: Give or remove items from characters and NPCs.
+
+### Damage Resolution
+
+When you call `apply_damage` with a `damage_type`, the server automatically checks the target's stored resistances, immunities, and vulnerabilities and applies the correct multiplier:
+
+- **Immune**: 0 damage
+- **Resistant**: half damage (round down)
+- **Vulnerable**: double damage
+
+Temporary HP absorbs damage after the multiplier is applied. You only need to narrate the outcome — never halve or double the dice roll yourself before calling the tool.
 
 ---
 
@@ -22,7 +34,7 @@ Sign up at [supabase.com](https://supabase.com) and create a new project. Note y
 
 #### 2. Create the migration helper function
 
-The plugin manages its own schema using migrations, which run directly from your browser. Supabase's REST API does not support DDL statements (like `CREATE TABLE`), so you need to create a small helper function in your database once.
+The plugin manages its own schema automatically. Supabase's REST API does not support DDL statements (like `CREATE TABLE`), so you need to create a small helper function in your database once.
 
 Open the **SQL Editor** in your Supabase dashboard and run:
 
@@ -47,7 +59,7 @@ END;
 $$;
 ```
 
-This function lets the plugin create tables and query them without going through PostgREST's schema cache. It is only callable with your `service_role` key.
+This function lets the plugin create tables without going through PostgREST's schema cache. It is only callable with your `service_role` key.
 
 #### 3. Configure the plugin
 
@@ -58,6 +70,4 @@ In TypingMind, open the plugin settings and fill in:
 | **External Supabase URL** | Project Settings → API → Project URL |
 | **External Supabase API Key** | Project Settings → API → `service_role` key |
 
-#### 4. Run migrations
-
-The first time you use the plugin, ask the assistant to run migrations. It will set up all required tables automatically. You only need to do this once (and again whenever the plugin is updated with new features).
+The plugin runs all required database migrations automatically on first use. No manual migration step is needed.
