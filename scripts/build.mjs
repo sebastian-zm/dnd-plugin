@@ -5,6 +5,7 @@ import * as esbuild from 'esbuild';
 const SRC_DIR = 'src';
 const DIST_DIR = 'dist';
 const FUNCTIONS_DIR = path.join(SRC_DIR, 'functions');
+const CONTEXT_DIR = path.join(SRC_DIR, 'context');
 
 const PREFIX = 'dnd5e24_';
 
@@ -39,6 +40,16 @@ async function build() {
       path.join(SRC_DIR, 'overview.md'),
       'utf-8'
     );
+
+    for (const endpoint of pluginTemplate.dynamicContextEndpoints ?? []) {
+      if (endpoint.staticContentFile) {
+        endpoint.staticContent = await fs.readFile(
+          path.join(CONTEXT_DIR, endpoint.staticContentFile),
+          'utf-8'
+        );
+        delete endpoint.staticContentFile;
+      }
+    }
 
     const functionFiles = await fs.readdir(FUNCTIONS_DIR);
     const jsNames = new Set(

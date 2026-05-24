@@ -5,6 +5,7 @@
   "type": "module",
   "scripts": {
     "build": "node scripts/build.mjs",
+    "build:mcp": "node scripts/build-mcp.mjs",
     "copy": "node scripts/copy.mjs",
     "lint": "eslint ."
   },
