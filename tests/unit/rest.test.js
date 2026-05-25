@@ -40,7 +40,7 @@ describe('rest', () => {
 
       expect(store.patch).toHaveBeenCalledWith(
         'characters', char.id,
-        { current_hp: 50, temporary_hp: 0, spell_slots_usable: {}, conditions: [] },
+        { current_hp: 50, temporary_hp: 0, spell_slots_usable: {}, conditions: [], death_save_successes: 0, death_save_failures: 0, resources: [] },
       );
       expect(result).toContain('Long rest complete.');
       expect(result).toContain('Aragorn: HP restored to 50');

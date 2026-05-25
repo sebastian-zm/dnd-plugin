@@ -20,6 +20,6 @@ export default async function list_characters(params, userSettings) {
   }
 
   const decorated = characters.map(decorateCharacter);
-  const keys = fields ?? ['slug', 'name', 'current_hp', 'max_hp', 'temporary_hp', 'ac', 'conditions', 'derived'];
+  const keys = fields ?? ['slug', 'name', 'current_hp', 'max_hp', 'temporary_hp', 'ac', 'conditions'];
   return JSON.stringify(decorated.map(c => Object.fromEntries(keys.map(k => [k, c[k]]))));
 }

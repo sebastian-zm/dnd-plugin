@@ -267,7 +267,7 @@
         "description": "Class resource pools (Rage, Ki, Channel Divinity, Action Surge, Bardic Inspiration, etc.). Each resource tracks current/max uses and how it recovers. Use use_resource to spend or restore individual resources.",
         "items": {
           "type": "object",
-          "required": ["name", "current", "max", "recovery_amount", "recovery_frequency"],
+          "required": ["name", "current", "max", "recovery_rules"],
           "properties": {
             "name": {
               "type": "string",
@@ -283,14 +283,25 @@
               "description": "Maximum uses.",
               "minimum": 1
             },
-            "recovery_amount": {
-              "type": "string",
-              "description": "How much is recovered on rest. Use 'full' to restore to max, an integer string like '2' to restore by a fixed amount, or dice notation like '1d6' for a rolled recovery (dice amounts must be applied manually via use_resource after rolling)."
-            },
-            "recovery_frequency": {
-              "type": "string",
-              "description": "When the resource recovers.",
-              "enum": ["short_rest", "long_rest", "dawn"]
+            "recovery_rules": {
+              "type": "array",
+              "description": "One or more recovery rules for this resource. Most resources have a single rule (e.g. full on long rest), but some have multiple — e.g. Second Wind recovers 1 use on short rest and all uses on long rest, so it needs two rules. On rest, all matching rules are evaluated and the one granting the greatest recovery is applied.",
+              "minItems": 1,
+              "items": {
+                "type": "object",
+                "required": ["amount", "frequency"],
+                "properties": {
+                  "amount": {
+                    "type": "string",
+                    "description": "How much is recovered. Use 'full' to restore to max, an integer string like '2' to restore by a fixed amount, or dice notation like '1d6' for a rolled recovery (dice amounts must be applied manually via use_resource after rolling)."
+                  },
+                  "frequency": {
+                    "type": "string",
+                    "description": "When this rule applies.",
+                    "enum": ["short_rest", "long_rest", "dawn"]
+                  }
+                }
+              }
             }
           }
         }

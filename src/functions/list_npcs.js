@@ -20,6 +20,6 @@ export default async function list_npcs(params, userSettings) {
   }
 
   const decorated = npcs.map(decorateNpc);
-  const keys = fields ?? ['slug', 'name', 'cr', 'ac', 'current_hp', 'max_hp', 'temporary_hp', 'conditions', 'derived'];
+  const keys = fields ?? ['slug', 'name', 'cr', 'ac', 'current_hp', 'max_hp', 'temporary_hp', 'conditions'];
   return JSON.stringify(decorated.map(n => Object.fromEntries(keys.map(k => [k, n[k]]))));
 }

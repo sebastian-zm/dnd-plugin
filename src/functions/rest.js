@@ -1,24 +1,45 @@
 import { SupabaseStore } from '../lib/supabase_store.js';
 import { ensureMigrations } from '../lib/migrations.js';
+import { DiceParser } from '../lib/dice.js';
 
 const DICE_PATTERN = /^\d+d\d+/i;
 
+function getRules(r) {
+  if (Array.isArray(r.recovery_rules)) return r.recovery_rules;
+  // backward compat: flat fields from old schema
+  if (r.recovery_frequency) return [{ amount: r.recovery_amount ?? 'full', frequency: r.recovery_frequency }];
+  return [];
+}
+
+function resolveAmount(amount, max) {
+  if (amount === 'full') return max;
+  if (DICE_PATTERN.test(String(amount))) {
+    try { return new DiceParser().parse(String(amount)).total; } catch { return 0; }
+  }
+  return parseInt(amount, 10) || 0;
+}
+
 function recoverResources(resources, frequencies) {
   const recovered = [];
-  const needsRoll = [];
   const updated = resources.map(r => {
-    if (!frequencies.includes(r.recovery_frequency)) return r;
-    if (r.current >= r.max) return r;
-    if (DICE_PATTERN.test(String(r.recovery_amount))) {
-      needsRoll.push(r);
-      return r;
+    const rules = getRules(r);
+    const matching = rules.filter(rule => frequencies.includes(rule.frequency));
+    if (matching.length === 0 || r.current >= r.max) return r;
+
+    const best = matching.reduce((best, rule) => {
+      const val = resolveAmount(rule.amount, r.max);
+      return val > best.val ? { val, isDice: DICE_PATTERN.test(String(rule.amount)), expr: rule.amount } : best;
+    }, { val: -Infinity, isDice: false, expr: '' });
+
+    if (best.val <= 0) return r;
+    const newCurrent = Math.min(r.max, r.current + best.val);
+    if (newCurrent !== r.current) {
+      const note = best.isDice ? ` (rolled ${best.expr})` : '';
+      recovered.push({ name: r.name, gained: newCurrent - r.current, newCurrent, max: r.max, note });
     }
-    const amount = r.recovery_amount === 'full' ? r.max : (parseInt(r.recovery_amount, 10) || r.max);
-    const newCurrent = Math.min(r.max, r.current + amount);
-    if (newCurrent !== r.current) recovered.push({ name: r.name, gained: newCurrent - r.current, newCurrent, max: r.max });
     return { ...r, current: newCurrent };
   });
-  return { updated, recovered, needsRoll };
+  return { updated, recovered };
 }
 
 export default async function rest(params, userSettings) {
@@ -41,7 +62,7 @@ export default async function rest(params, userSettings) {
 
   if (rest_type === 'long') {
     for (const c of characters) {
-      const { updated: updatedResources, recovered, needsRoll } = recoverResources(
+      const { updated: updatedResources, recovered } = recoverResources(
         c.resources ?? [], ['short_rest', 'long_rest']
       );
       await store.patch('characters', c.id, {
@@ -59,8 +80,7 @@ export default async function rest(params, userSettings) {
       if (c.temporary_hp > 0) parts.push(`${c.temporary_hp} temp HP cleared`);
       const activeConditions = c.conditions ?? [];
       if (activeConditions.length > 0) parts.push(`conditions cleared (${activeConditions.join(', ')})`);
-      if (recovered.length > 0) parts.push(`resources restored: ${recovered.map(r => `${r.name} (${r.newCurrent}/${r.max})`).join(', ')}`);
-      if (needsRoll.length > 0) parts.push(`resources needing manual roll: ${needsRoll.map(r => `${r.name} (${r.recovery_amount})`).join(', ')}`);
+      if (recovered.length > 0) parts.push(`resources restored: ${recovered.map(r => `${r.name} ${r.newCurrent}/${r.max}${r.note}`).join(', ')}`);
       results.push(parts.join(', ') + '.');
     }
     return `Long rest complete.\n${results.join('\n')}`;
@@ -78,12 +98,11 @@ export default async function rest(params, userSettings) {
       parts.push(`Pact Magic restored (${totalSlots} slot${totalSlots !== 1 ? 's' : ''})`);
     }
 
-    const { updated: updatedResources, recovered, needsRoll } = recoverResources(
+    const { updated: updatedResources, recovered } = recoverResources(
       c.resources ?? [], ['short_rest']
     );
-    if (recovered.length > 0 || needsRoll.length > 0) patch.resources = updatedResources;
-    if (recovered.length > 0) parts.push(`resources restored: ${recovered.map(r => `${r.name} (${r.newCurrent}/${r.max})`).join(', ')}`);
-    if (needsRoll.length > 0) parts.push(`resources needing manual roll: ${needsRoll.map(r => `${r.name} (${r.recovery_amount})`).join(', ')}`);
+    if (recovered.length > 0) patch.resources = updatedResources;
+    if (recovered.length > 0) parts.push(`resources restored: ${recovered.map(r => `${r.name} ${r.newCurrent}/${r.max}${r.note}`).join(', ')}`);
 
     if (Object.keys(patch).length > 0) await store.patch('characters', c.id, patch);
 

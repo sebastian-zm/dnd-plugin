@@ -13,11 +13,11 @@ export function setElicitBackend(fn) {
  *   available: true, value: string  — user provided a value.
  */
 export async function elicit(message) {
-  if (typeof window !== 'undefined' && typeof window.prompt === 'function') {
-    return { value: window.prompt(message), available: true };
-  }
   if (_backend) {
     return { value: await _backend(message), available: true };
+  }
+  if (typeof window !== 'undefined' && typeof window.prompt === 'function') {
+    return { value: window.prompt(message), available: true };
   }
   return { value: null, available: false };
 }
