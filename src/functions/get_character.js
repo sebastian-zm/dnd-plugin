@@ -1,5 +1,6 @@
 import { SupabaseStore } from '../lib/supabase_store.js';
 import { ensureMigrations } from '../lib/migrations.js';
+import { decorateCharacter } from '../lib/derived.js';
 
 export default async function get_character(params, userSettings) {
   await ensureMigrations(userSettings);
@@ -12,5 +13,5 @@ export default async function get_character(params, userSettings) {
     return `No character found with identifier "${character}" in game "${game}".`;
   }
 
-  return JSON.stringify(record);
+  return JSON.stringify(decorateCharacter(record));
 }

@@ -1,6 +1,6 @@
 {
   "name": "get_npc",
-  "description": "Returns the full stat block for an NPC, looked up by slug or UUID.",
+  "description": "Returns the full stat block for an NPC, looked up by slug or UUID. Includes a 'derived' block with computed fields: pb, ability_modifiers, save_modifiers, skill_modifiers, initiative, passive_perception, spell_save_dc, spell_attack_bonus.",
   "parameters": {
     "type": "object",
     "required": ["game", "npc"],

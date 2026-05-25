@@ -1,6 +1,6 @@
 {
   "name": "get_character",
-  "description": "Returns the full character sheet for a player character, looked up by slug or UUID.",
+  "description": "Returns the full character sheet for a player character, looked up by slug or UUID. Includes a 'derived' block with computed fields: level (from xp), xp_for/to_next_level, pb, ability_modifiers, save_modifiers, skill_modifiers, initiative, passive_perception, spell_save_dc, spell_attack_bonus.",
   "parameters": {
     "type": "object",
     "required": ["game", "character"],

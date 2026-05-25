@@ -1,5 +1,6 @@
 import { SupabaseStore } from '../lib/supabase_store.js';
 import { ensureMigrations } from '../lib/migrations.js';
+import { decorateCharacter } from '../lib/derived.js';
 
 export default async function list_characters(params, userSettings) {
   await ensureMigrations(userSettings);
@@ -18,6 +19,7 @@ export default async function list_characters(params, userSettings) {
     return `No characters found in game "${game}".`;
   }
 
-  const keys = fields ?? ['slug', 'name', 'current_hp', 'max_hp', 'temporary_hp', 'ac', 'conditions'];
-  return JSON.stringify(characters.map(c => Object.fromEntries(keys.map(k => [k, c[k]]))));
+  const decorated = characters.map(decorateCharacter);
+  const keys = fields ?? ['slug', 'name', 'current_hp', 'max_hp', 'temporary_hp', 'ac', 'conditions', 'derived'];
+  return JSON.stringify(decorated.map(c => Object.fromEntries(keys.map(k => [k, c[k]]))));
 }

@@ -1,6 +1,6 @@
 {
   "name": "list_characters",
-  "description": "Lists all player characters in a game. Returns slug, name, current_hp, max_hp, temporary_hp, and ac by default. Pass fields to request additional or different columns.",
+  "description": "Lists all player characters in a game. Returns slug, name, current_hp, max_hp, temporary_hp, ac, conditions, and a derived block (level, pb, ability_modifiers, save/skill modifiers, initiative, passive_perception, spell_save_dc, spell_attack_bonus, xp_to_next_level) by default. Pass fields to request additional or different columns; include 'derived' to get computed fields.",
   "parameters": {
     "type": "object",
     "required": ["game"],
@@ -12,7 +12,7 @@
       "fields": {
         "type": "array",
         "items": { "type": "string" },
-        "description": "Optional list of column names to include in each result. Defaults to [slug, name, current_hp, max_hp, temporary_hp, ac]."
+        "description": "Optional list of column names to include in each result. Defaults to [slug, name, current_hp, max_hp, temporary_hp, ac, conditions, derived]. Use 'derived' to include computed fields."
       }
     }
   }

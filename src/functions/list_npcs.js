@@ -1,5 +1,6 @@
 import { SupabaseStore } from '../lib/supabase_store.js';
 import { ensureMigrations } from '../lib/migrations.js';
+import { decorateNpc } from '../lib/derived.js';
 
 export default async function list_npcs(params, userSettings) {
   await ensureMigrations(userSettings);
@@ -18,6 +19,7 @@ export default async function list_npcs(params, userSettings) {
     return `No NPCs found in game "${game}".`;
   }
 
-  const keys = fields ?? ['slug', 'name', 'cr', 'ac', 'current_hp', 'max_hp', 'temporary_hp', 'conditions'];
-  return JSON.stringify(npcs.map(n => Object.fromEntries(keys.map(k => [k, n[k]]))));
+  const decorated = npcs.map(decorateNpc);
+  const keys = fields ?? ['slug', 'name', 'cr', 'ac', 'current_hp', 'max_hp', 'temporary_hp', 'conditions', 'derived'];
+  return JSON.stringify(decorated.map(n => Object.fromEntries(keys.map(k => [k, n[k]]))));
 }

@@ -1,5 +1,6 @@
 import { SupabaseStore } from '../lib/supabase_store.js';
 import { ensureMigrations } from '../lib/migrations.js';
+import { decorateNpc } from '../lib/derived.js';
 
 export default async function get_npc(params, userSettings) {
   await ensureMigrations(userSettings);
@@ -12,5 +13,5 @@ export default async function get_npc(params, userSettings) {
     return `No NPC found with identifier "${npc}" in game "${game}".`;
   }
 
-  return JSON.stringify(record);
+  return JSON.stringify(decorateNpc(record));
 }
