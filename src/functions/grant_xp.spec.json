@@ -1,0 +1,24 @@
+{
+  "name": "grant_xp",
+  "description": "Grants experience points to one or more player characters in a game. If no characters are specified, XP is granted to all characters in the game (the whole party). Returns the new XP total for each affected character.",
+  "parameters": {
+    "type": "object",
+    "required": ["game", "amount"],
+    "properties": {
+      "game": {
+        "type": "string",
+        "description": "The slug of the game."
+      },
+      "amount": {
+        "type": "integer",
+        "description": "The amount of XP to grant to each character.",
+        "minimum": 1
+      },
+      "characters": {
+        "type": "array",
+        "description": "Slugs or names of the characters to receive XP. If omitted, all characters in the game are awarded.",
+        "items": { "type": "string" }
+      }
+    }
+  }
+}

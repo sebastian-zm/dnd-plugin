@@ -177,6 +177,13 @@ const MIGRATIONS = [
       ALTER TABLE npcs       ADD COLUMN IF NOT EXISTS conditions JSONB DEFAULT '[]';
     `,
   },
+  {
+    version: '20260525085742',
+    name: 'add_xp_to_characters',
+    sql: `
+      ALTER TABLE characters ADD COLUMN IF NOT EXISTS xp INTEGER NOT NULL DEFAULT 0;
+    `,
+  },
 ];
 
 // Module-level guard: in a persistent process (MCP server) migrations only run once.

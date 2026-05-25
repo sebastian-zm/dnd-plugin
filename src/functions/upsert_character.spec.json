@@ -256,6 +256,11 @@
         "type": "number",
         "description": "The character's wealth in gold pieces (GP). Fractional values represent electrum, silver, and copper equivalents.",
         "minimum": 0
+      },
+      "xp": {
+        "type": "integer",
+        "description": "Total experience points earned by the character.",
+        "minimum": 0
       }
     }
   }
