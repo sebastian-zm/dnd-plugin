@@ -1,5 +1,6 @@
 import { SupabaseStore } from '../lib/supabase_store.js';
 import { ensureMigrations } from '../lib/migrations.js';
+import { elicit } from '../lib/elicit.js';
 
 export default async function delete_game(params, userSettings) {
   await ensureMigrations(userSettings);
@@ -12,13 +13,11 @@ export default async function delete_game(params, userSettings) {
     return `No game with slug "${slug}" found.`;
   }
 
-  if (typeof window !== 'undefined') {
-    const confirmation = window.prompt(
-      `Type the game name to confirm deletion:\n\n"${existing.name}"`
-    );
-    if (confirmation === null) {
-      return 'Deletion cancelled.';
-    }
+  const { value: confirmation, available } = await elicit(
+    `Type the game name to confirm deletion:\n\n"${existing.name}"`
+  );
+  if (available) {
+    if (confirmation === null) return 'Deletion cancelled.';
     if (confirmation !== existing.name) {
       return `Deletion cancelled: "${confirmation}" does not match the game name "${existing.name}".`;
     }

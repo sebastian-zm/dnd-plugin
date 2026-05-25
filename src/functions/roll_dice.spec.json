@@ -1,0 +1,24 @@
+{
+  "name": "roll_dice",
+  "description": "Roll dice using standard dice notation. Supports basic rolls, keep/drop, exploding, reroll, fudge, percentile, min/max functions, and math. Use mode \"system\" for a quick total, \"transparent\" for a full per-die breakdown, or \"user\" to prompt the user to enter physical dice results (falls back to auto-roll if the platform does not support user input).",
+  "parameters": {
+    "type": "object",
+    "required": ["expression"],
+    "properties": {
+      "expression": {
+        "type": "string",
+        "description": "Dice expression, or comma-separated list for multiple rolls at once (e.g. \"2d6, d8+2, 4d6k3\"). Top-level commas separate expressions; commas inside min()/max() are part of those functions. Supported notation:\n• Basic: 2d6, d20, d% (percentile), 4dF (Fudge/FATE dice)\n• Keep/Drop: 4d6k3 (keep highest 3), 5d8d2 (drop lowest 2)\n• Exploding: 3d6! or 3d6e (explode on max), 2d10e8 (explode on 8+), 3d6!! (compound)\n• Reroll: 4d6r1 (reroll ≤1, once)\n• Functions: min(2d6, 3d4), max(d20, d12+5)\n• Math: d20+5, 2d6*3, (2d4+1)*2"
+      },
+      "mode": {
+        "type": "string",
+        "enum": ["system", "transparent", "user"],
+        "description": "\"system\" returns just the total; \"transparent\" shows per-group breakdown and the full evaluation chain; \"user\" prompts the user to enter results from physical dice (auto-rolls with full breakdown if the platform does not support user input prompts).",
+        "default": "system"
+      },
+      "description": {
+        "type": "string",
+        "description": "Optional label for this roll or group of rolls, e.g. \"Attack roll\" or \"Initiative\"."
+      }
+    }
+  }
+}

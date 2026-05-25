@@ -15,3 +15,13 @@
 - Pass `damage_type` to `dnd5e24_apply_damage` whenever known — resistances, immunities, and vulnerabilities are applied automatically server-side when a type is provided.
 - When multiple entities are affected by an action (e.g., area of effect), call `dnd5e24_apply_damage` once per entity.
 - After any significant plot development — a betrayal, a discovery, a character death, a major decision — call `dnd5e24_upsert_memory` proactively to preserve it.
+
+## Damage Resolution
+
+When you call `apply_damage` with a `damage_type`, the server automatically checks the target's stored resistances, immunities, and vulnerabilities and applies the correct multiplier:
+
+- **Immune**: 0 damage
+- **Resistant**: half damage (round down)
+- **Vulnerable**: double damage
+
+Temporary HP absorbs damage after the multiplier is applied. You only need to narrate the outcome — never halve or double the dice roll yourself before calling the tool.

@@ -1,0 +1,14 @@
+{
+  "name": "end_combat",
+  "description": "Ends the current combat encounter for a game, clearing all initiative and round tracking state. Call this when the encounter is resolved (all enemies defeated, combat fled, etc.).",
+  "parameters": {
+    "type": "object",
+    "required": ["game"],
+    "properties": {
+      "game": {
+        "type": "string",
+        "description": "The slug of the game."
+      }
+    }
+  }
+}

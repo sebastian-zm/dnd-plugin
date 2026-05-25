@@ -1,0 +1,23 @@
+{
+  "name": "roll_death_save",
+  "description": "Records the outcome of a death saving throw for an unconscious character at 0 HP. Roll 1d20 yourself, then call this with the outcome. A natural 20 is a critical success (character regains 1 HP and stabilizes). A natural 1 is a critical failure (counts as two failures). Three successes stabilizes the character; three failures means death.",
+  "parameters": {
+    "type": "object",
+    "required": ["game", "character", "outcome"],
+    "properties": {
+      "game": {
+        "type": "string",
+        "description": "The slug of the game."
+      },
+      "character": {
+        "type": "string",
+        "description": "Slug or UUID of the character making the death save."
+      },
+      "outcome": {
+        "type": "string",
+        "description": "Result of the death saving throw. 'success' = roll 10–19, 'failure' = roll 2–9, 'critical_success' = natural 20 (character regains 1 HP and stabilizes), 'critical_failure' = natural 1 (counts as two failures).",
+        "enum": ["success", "failure", "critical_success", "critical_failure"]
+      }
+    }
+  }
+}

@@ -1,0 +1,39 @@
+{
+  "name": "use_resource",
+  "description": "Spends or restores uses of a named resource pool on a character or NPC (e.g. Rage, Ki, Channel Divinity, Action Surge). Use action 'use' when the resource is spent and 'restore' when recovering uses outside of a rest (e.g. a feature that grants a resource back).",
+  "parameters": {
+    "type": "object",
+    "required": ["game", "entity_type", "entity", "resource_name"],
+    "properties": {
+      "game": {
+        "type": "string",
+        "description": "The slug of the game."
+      },
+      "entity_type": {
+        "type": "string",
+        "description": "Whether the entity is a player character or NPC.",
+        "enum": ["character", "npc"]
+      },
+      "entity": {
+        "type": "string",
+        "description": "Slug or UUID of the character or NPC."
+      },
+      "resource_name": {
+        "type": "string",
+        "description": "Name of the resource to spend or restore (must match an entry in the entity's resources array exactly)."
+      },
+      "amount": {
+        "type": "integer",
+        "description": "Number of uses to spend or restore. Defaults to 1.",
+        "minimum": 1,
+        "default": 1
+      },
+      "action": {
+        "type": "string",
+        "description": "Whether to spend ('use') or recover ('restore') uses. Defaults to 'use'.",
+        "enum": ["use", "restore"],
+        "default": "use"
+      }
+    }
+  }
+}

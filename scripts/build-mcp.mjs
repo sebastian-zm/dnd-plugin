@@ -57,6 +57,7 @@ async function buildMcp() {
 
   const entryCode = `#!/usr/bin/env node
 ${imports}
+import { setElicitBackend } from './src/lib/elicit.js';
 
 const tools = [
 ${toolsArray}
@@ -70,6 +71,28 @@ const userSettings = {
   externalDbUrl: process.env.SUPABASE_URL ?? '',
   externalDbKey: process.env.SUPABASE_KEY ?? '',
 };
+
+let _reqId = 0;
+const _pending = new Map();
+
+function sendRequest(method, params) {
+  return new Promise((resolve, reject) => {
+    const id = '__srv' + (++_reqId);
+    _pending.set(id, { resolve, reject });
+    send({ jsonrpc: '2.0', id, method, params });
+  });
+}
+
+async function routeMessage(msg) {
+  if (msg.id !== undefined && msg.method === undefined && _pending.has(String(msg.id))) {
+    const p = _pending.get(String(msg.id));
+    _pending.delete(String(msg.id));
+    if (msg.error) p.reject(new Error(msg.error.message));
+    else p.resolve(msg.result);
+    return;
+  }
+  handleMessage(msg);
+}
 
 function send(obj) {
   process.stdout.write(JSON.stringify(obj) + '\\n');
@@ -87,6 +110,22 @@ async function handleMessage(msg) {
   const { id, method, params } = msg;
 
   if (method === 'initialize') {
+    if (params?.capabilities?.elicitation) {
+      setElicitBackend(async (message) => {
+        try {
+          const res = await sendRequest('elicitation/create', {
+            message,
+            requestedSchema: {
+              type: 'object',
+              properties: { value: { type: 'string', title: 'Your answer' } },
+              required: ['value'],
+            },
+          });
+          if (res?.action === 'accept') return res.content?.value ?? null;
+          return null;
+        } catch { return null; }
+      });
+    }
     respond(id, {
       protocolVersion: '2024-11-05',
       capabilities: { tools: {}, resources: {} },
@@ -138,7 +177,7 @@ process.stdin.on('data', chunk => {
     buf = buf.slice(nl + 1);
     if (line) {
       try {
-        handleMessage(JSON.parse(line));
+        routeMessage(JSON.parse(line));
       } catch {
         // ignore unparseable lines
       }

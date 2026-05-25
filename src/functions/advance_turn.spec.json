@@ -1,0 +1,14 @@
+{
+  "name": "advance_turn",
+  "description": "Advances to the next combatant's turn in the current combat encounter. When the last combatant in the order acts, wraps back to the top and increments the round counter. Returns who is acting now and the current round number. Call this after each combatant finishes their turn.",
+  "parameters": {
+    "type": "object",
+    "required": ["game"],
+    "properties": {
+      "game": {
+        "type": "string",
+        "description": "The slug of the game."
+      }
+    }
+  }
+}

@@ -1,0 +1,42 @@
+{
+  "name": "start_combat",
+  "description": "Begins a combat encounter for a game. Sets the initiative order and advances to round 1. Each combatant entry requires a slug, entity type, display name, and initiative roll. The turn order is sorted from highest to lowest initiative. Call advance_turn after each combatant acts.",
+  "parameters": {
+    "type": "object",
+    "required": ["game", "combatants"],
+    "properties": {
+      "game": {
+        "type": "string",
+        "description": "The slug of the game."
+      },
+      "combatants": {
+        "type": "array",
+        "description": "All combatants entering initiative, in any order. Will be sorted by initiative descending.",
+        "minItems": 1,
+        "items": {
+          "type": "object",
+          "required": ["slug", "entity_type", "name", "initiative"],
+          "properties": {
+            "slug": {
+              "type": "string",
+              "description": "The entity's slug (or UUID)."
+            },
+            "entity_type": {
+              "type": "string",
+              "enum": ["character", "npc"],
+              "description": "Whether this combatant is a player character or NPC."
+            },
+            "name": {
+              "type": "string",
+              "description": "Display name used in turn announcements."
+            },
+            "initiative": {
+              "type": "integer",
+              "description": "Initiative roll result (higher goes first)."
+            }
+          }
+        }
+      }
+    }
+  }
+}

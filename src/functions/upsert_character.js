@@ -39,7 +39,8 @@ export default async function upsert_character(params, userSettings) {
     pb, proficiencies, expertise, weapon_mastery, spellcasting_ability, spells_known,
     spells_prepared, spell_slots_total, spell_slots_usable, senses, languages,
     damage_resistances, damage_immunities, damage_vulnerabilities, condition_immunities,
-    conditions, features, equipment, notes, gold, xp,
+    conditions, features, equipment, notes, gold, xp, resources,
+    death_save_successes, death_save_failures,
   } = rest;
 
   const character = {
@@ -85,6 +86,9 @@ export default async function upsert_character(params, userSettings) {
     notes,
     gold: gold ?? 0,
     xp: xp ?? 0,
+    resources: resources ?? [],
+    death_save_successes: death_save_successes ?? 0,
+    death_save_failures: death_save_failures ?? 0,
   };
 
   await store.insert('characters', character);

@@ -10,16 +10,6 @@ This plugin transforms your AI assistant into a Dungeon Master for Dungeons & Dr
 - **Memories**: Store world lore, NPC decisions, and plot points as named memories scoped to a game.
 - **Inventory**: Give or remove items from characters and NPCs.
 
-### Damage Resolution
-
-When you call `apply_damage` with a `damage_type`, the server automatically checks the target's stored resistances, immunities, and vulnerabilities and applies the correct multiplier:
-
-- **Immune**: 0 damage
-- **Resistant**: half damage (round down)
-- **Vulnerable**: double damage
-
-Temporary HP absorbs damage after the multiplier is applied. You only need to narrate the outcome — never halve or double the dice roll yourself before calling the tool.
-
 ---
 
 ### Database Setup (Required)

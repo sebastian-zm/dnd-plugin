@@ -184,6 +184,32 @@ const MIGRATIONS = [
       ALTER TABLE characters ADD COLUMN IF NOT EXISTS xp INTEGER NOT NULL DEFAULT 0;
     `,
   },
+  {
+    version: '20260525141824',
+    name: 'add_resources_and_death_saves_to_characters',
+    sql: `
+      ALTER TABLE characters ADD COLUMN IF NOT EXISTS resources            JSONB   DEFAULT '[]';
+      ALTER TABLE characters ADD COLUMN IF NOT EXISTS death_save_successes INTEGER NOT NULL DEFAULT 0;
+      ALTER TABLE characters ADD COLUMN IF NOT EXISTS death_save_failures  INTEGER NOT NULL DEFAULT 0;
+    `,
+  },
+  {
+    version: '20260525141825',
+    name: 'add_resources_to_npcs',
+    sql: `
+      ALTER TABLE npcs ADD COLUMN IF NOT EXISTS resources JSONB DEFAULT '[]';
+    `,
+  },
+  {
+    version: '20260525141826',
+    name: 'add_combat_state_to_games',
+    sql: `
+      ALTER TABLE games ADD COLUMN IF NOT EXISTS combat_active          BOOLEAN NOT NULL DEFAULT FALSE;
+      ALTER TABLE games ADD COLUMN IF NOT EXISTS combat_round           INTEGER NOT NULL DEFAULT 0;
+      ALTER TABLE games ADD COLUMN IF NOT EXISTS turn_order             JSONB   NOT NULL DEFAULT '[]';
+      ALTER TABLE games ADD COLUMN IF NOT EXISTS active_combatant_index INTEGER NOT NULL DEFAULT 0;
+    `,
+  },
 ];
 
 // Module-level guard: in a persistent process (MCP server) migrations only run once.

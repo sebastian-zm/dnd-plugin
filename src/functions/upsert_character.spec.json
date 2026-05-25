@@ -261,6 +261,51 @@
         "type": "integer",
         "description": "Total experience points earned by the character.",
         "minimum": 0
+      },
+      "resources": {
+        "type": "array",
+        "description": "Class resource pools (Rage, Ki, Channel Divinity, Action Surge, Bardic Inspiration, etc.). Each resource tracks current/max uses and how it recovers. Use use_resource to spend or restore individual resources.",
+        "items": {
+          "type": "object",
+          "required": ["name", "current", "max", "recovery_amount", "recovery_frequency"],
+          "properties": {
+            "name": {
+              "type": "string",
+              "description": "Display name of the resource (e.g. 'Rage', 'Ki', 'Channel Divinity')."
+            },
+            "current": {
+              "type": "integer",
+              "description": "Current remaining uses.",
+              "minimum": 0
+            },
+            "max": {
+              "type": "integer",
+              "description": "Maximum uses.",
+              "minimum": 1
+            },
+            "recovery_amount": {
+              "type": "string",
+              "description": "How much is recovered on rest. Use 'full' to restore to max, an integer string like '2' to restore by a fixed amount, or dice notation like '1d6' for a rolled recovery (dice amounts must be applied manually via use_resource after rolling)."
+            },
+            "recovery_frequency": {
+              "type": "string",
+              "description": "When the resource recovers.",
+              "enum": ["short_rest", "long_rest", "dawn"]
+            }
+          }
+        }
+      },
+      "death_save_successes": {
+        "type": "integer",
+        "description": "Number of successful death saving throws (0–3). Managed by roll_death_save. Reset to 0 on stabilization, revival, or rest.",
+        "minimum": 0,
+        "maximum": 3
+      },
+      "death_save_failures": {
+        "type": "integer",
+        "description": "Number of failed death saving throws (0–3). Managed by roll_death_save. Reset to 0 on stabilization, revival, or rest.",
+        "minimum": 0,
+        "maximum": 3
       }
     }
   }
