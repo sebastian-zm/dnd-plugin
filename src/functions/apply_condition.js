@@ -21,6 +21,13 @@ export default async function apply_condition(params, userSettings) {
       return `No ${entity_type} found with identifier "${entity}" in game "${game}".`;
     }
 
+    const immunities = record.condition_immunities ?? [];
+    // Exhaustion is stored as "Exhaustion 1" etc. but immunity is recorded as "Exhaustion"
+    const baseCondition = condition.startsWith('Exhaustion') ? 'Exhaustion' : condition;
+    if (immunities.includes(baseCondition)) {
+      return `${record.name} is immune to ${condition} and cannot be affected.`;
+    }
+
     const current = record.conditions ?? [];
     if (current.includes(condition)) {
       return `${record.name} already has the ${condition} condition.`;
