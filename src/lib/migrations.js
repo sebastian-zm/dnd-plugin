@@ -238,12 +238,21 @@ export async function ensureMigrations(userSettings) {
   const applied = await query('SELECT version FROM schema_migrations ORDER BY version');
   const appliedVersions = new Set(applied.map(r => r.version));
 
+  let appliedCount = 0;
   for (const migration of MIGRATIONS) {
     if (appliedVersions.has(migration.version)) continue;
     await execute(migration.sql);
     await execute(
       `INSERT INTO schema_migrations (version, name) VALUES ('${migration.version}', '${migration.name}') ON CONFLICT (version) DO NOTHING`
     );
+    appliedCount++;
+  }
+
+  // Reload PostgREST's schema cache after DDL changes so new columns are immediately visible.
+  if (appliedCount > 0) {
+    await execute(`NOTIFY pgrst, 'reload schema'`);
+    // Give PostgREST a moment to process the reload before the first query.
+    await new Promise(r => setTimeout(r, 500));
   }
 
   _confirmed = true;

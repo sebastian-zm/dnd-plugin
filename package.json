@@ -8,7 +8,10 @@
     "build:mcp": "node scripts/build-mcp.mjs",
     "build:mcpb": "node scripts/build-mcpb.mjs",
     "copy": "node scripts/copy.mjs",
-    "lint": "eslint ."
+    "lint": "eslint .",
+    "test": "vitest run --config vitest.config.mjs",
+    "test:system": "vitest run --config vitest.system.config.mjs",
+    "test:watch": "vitest --config vitest.config.mjs"
   },
   "keywords": [
     "typingmind-plugin",
@@ -21,6 +24,7 @@
     "archiver": "^8.0.0",
     "clipboardy": "^5.3.1",
     "esbuild": "^0.28.0",
-    "eslint": "^10.4.0"
+    "eslint": "^10.4.0",
+    "vitest": "^4.1.7"
   }
 }
