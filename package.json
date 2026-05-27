@@ -18,6 +18,12 @@
     "dnd"
   ],
   "author": "",
+  "bin": {
+    "dnd-mcp": "./dist/mcp-server.mjs"
+  },
+  "files": [
+    "dist/mcp-server.mjs"
+  ],
   "license": "ISC",
   "devDependencies": {
     "@eslint/js": "^10.0.1",

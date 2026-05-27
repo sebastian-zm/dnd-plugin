@@ -1,7 +1,8 @@
 # Dependencies
 /node_modules
 
-# Build artifacts
-/dist
+# Build artifacts (mcp-server.mjs is committed for npx support)
+/dist/dnd-plugin.json
+/dist/dnd-plugin.mcpb
 
 .deepseek-api-key
