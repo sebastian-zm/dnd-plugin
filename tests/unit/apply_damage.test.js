@@ -68,9 +68,7 @@ describe('apply_damage', () => {
       fakeSettings,
     );
 
-    expect(store.patch).toHaveBeenCalledWith(
-      'characters', char.id, { current_hp: 50, temporary_hp: 0 }, char.updated_at,
-    );
+    expect(store.patch).not.toHaveBeenCalled();
     expect(result).toBe('Aragorn is immune to fire damage — no damage taken.');
   });
 

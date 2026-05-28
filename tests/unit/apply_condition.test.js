@@ -60,7 +60,7 @@ describe('apply_condition', () => {
       table === 'games' ? Promise.resolve(makeGame()) : Promise.resolve(char),
     );
     const result = await applyCondition(BASE_PARAMS, fakeSettings);
-    expect(result).toBe('Aragorn already has the Poisoned condition.');
+    expect(result).toBe('Aragorn already has the Poisoned condition — no change.');
     expect(store.patch).not.toHaveBeenCalled();
   });
 

@@ -1,6 +1,6 @@
 {
   "name": "give_item",
-  "description": "Adds an item to a character's or NPC's equipment list.",
+  "description": "Adds an item to a character's or NPC's equipment list. If quantity > 1, the item is stored as a single grouped entry (e.g., 'Arrow (x50)') rather than N separate entries.",
   "parameters": {
     "type": "object",
     "required": ["game", "entity_type", "entity", "item"],
@@ -20,7 +20,12 @@
       },
       "item": {
         "type": "string",
-        "description": "The item to add (e.g., 'Longsword +1', 'Potion of Healing')."
+        "description": "The item to add (e.g., 'Longsword +1', 'Potion of Healing', 'Arrow')."
+      },
+      "quantity": {
+        "type": "integer",
+        "minimum": 1,
+        "description": "Number of items to add. If > 1, stored as 'item (xN)' (e.g., 'Arrow (x50)'). Defaults to 1."
       }
     }
   }

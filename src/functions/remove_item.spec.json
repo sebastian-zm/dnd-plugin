@@ -1,6 +1,6 @@
 {
   "name": "remove_item",
-  "description": "Removes an item from a character's or NPC's equipment list. Removes the first exact match.",
+  "description": "Removes an item from a character's or NPC's equipment list. Removes the first exact match. If quantity > 1, looks for the grouped entry 'item (xN)' created by give_item.",
   "parameters": {
     "type": "object",
     "required": ["game", "entity_type", "entity", "item"],
@@ -20,7 +20,12 @@
       },
       "item": {
         "type": "string",
-        "description": "The exact item string to remove (must match an entry in the equipment list)."
+        "description": "The item name to remove (must match an entry in the equipment list)."
+      },
+      "quantity": {
+        "type": "integer",
+        "minimum": 1,
+        "description": "If > 1, removes the grouped entry 'item (xN)' rather than a plain item string. Defaults to 1."
       }
     }
   }

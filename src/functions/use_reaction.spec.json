@@ -1,0 +1,23 @@
+{
+  "name": "use_reaction",
+  "description": "Marks a combatant's reaction as spent for the current round. Use when a combatant takes an opportunity attack, casts Shield, Counterspell, Hellish Rebuke, or any other reaction. The reaction recharges automatically at the start of the combatant's next turn (handled by advance_turn). Returns an error if the reaction was already used this round.",
+  "parameters": {
+    "type": "object",
+    "required": ["game", "entity_type", "entity"],
+    "properties": {
+      "game": {
+        "type": "string",
+        "description": "The slug of the game."
+      },
+      "entity_type": {
+        "type": "string",
+        "enum": ["character", "npc"],
+        "description": "Whether the combatant is a player character or NPC."
+      },
+      "entity": {
+        "type": "string",
+        "description": "The slug of the combatant (must match their slug in the combat turn order)."
+      }
+    }
+  }
+}

@@ -1,13 +1,17 @@
 {
   "name": "delete_game",
-  "description": "Deletes a game and all its associated data (characters, NPCs, memories) by slug. This is irreversible.",
+  "description": "Permanently deletes a game and all its associated data (characters, NPCs, memories). This is irreversible. Requires confirm_name to exactly match the game's name as a safeguard against accidental deletion.",
   "parameters": {
     "type": "object",
-    "required": ["slug"],
+    "required": ["slug", "confirm_name"],
     "properties": {
       "slug": {
         "type": "string",
         "description": "The slug of the game to delete."
+      },
+      "confirm_name": {
+        "type": "string",
+        "description": "Must exactly match the game's name (case-sensitive). Use list_games or the game's known name. Deletion is rejected if this does not match."
       }
     }
   }

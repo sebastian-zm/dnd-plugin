@@ -5,7 +5,7 @@ import { elicit } from '../lib/elicit.js';
 export default async function delete_game(params, userSettings) {
   await ensureMigrations(userSettings);
 
-  const { slug } = params;
+  const { slug, confirm_name } = params;
   const store = new SupabaseStore(userSettings.externalDbUrl, userSettings.externalDbKey);
 
   const existing = await store.get('games', slug);
@@ -13,8 +13,14 @@ export default async function delete_game(params, userSettings) {
     return `No game with slug "${slug}" found.`;
   }
 
+  // confirm_name must exactly match the game name — first line of defence against typos
+  if (confirm_name !== existing.name) {
+    return `Deletion cancelled: "${confirm_name}" does not match the game name "${existing.name}". Pass the exact game name as confirm_name.`;
+  }
+
+  // Secondary confirmation via UI dialog when available (TypingMind)
   const { value: confirmation, available } = await elicit(
-    `Type the game name to confirm deletion:\n\n"${existing.name}"`
+    `Type the game name to confirm permanent deletion:\n\n"${existing.name}"`
   );
   if (available) {
     if (confirmation === null) return 'Deletion cancelled.';

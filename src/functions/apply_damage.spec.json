@@ -1,6 +1,6 @@
 {
   "name": "apply_damage",
-  "description": "Applies damage to a character or NPC, automatically applying the target's resistances, immunities, and vulnerabilities when damage_type is provided. Resistance halves damage (round down); immunity negates it; vulnerability doubles it. Temporary HP absorbs damage after this multiplier is applied. HP cannot go below 0. Always pass the raw dice roll — do not pre-adjust for resistances.",
+  "description": "Applies damage to a character or NPC with automatic resistance/immunity/vulnerability resolution. Always pass the raw dice roll — do not pre-adjust for resistances. Temporary HP absorbs damage after resistances are applied. HP floors at 0.\n\nAutomatic side effects when a character drops to 0 HP: the Unconscious condition is applied (unless immune), death saves begin, and any active concentration spell is broken. Instant death occurs if the excess damage equals or exceeds the target's maximum HP.\n\nWhen a concentrating entity takes HP damage but survives above 0 HP, the response includes the required Constitution save DC (max(10, ceil(hp_lost/2))).",
   "parameters": {
     "type": "object",
     "required": ["game", "entity_type", "entity", "amount"],

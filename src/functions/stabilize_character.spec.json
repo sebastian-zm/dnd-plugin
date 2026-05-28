@@ -1,0 +1,18 @@
+{
+  "name": "stabilize_character",
+  "description": "Stabilizes a character at 0 HP, clearing their death saving throw counters. A stabilized character remains unconscious but no longer makes death saves each round. Use when a Medicine check (DC 10) succeeds, Spare the Dying is cast, or any other effect stabilizes without healing.",
+  "parameters": {
+    "type": "object",
+    "required": ["game", "character"],
+    "properties": {
+      "game": {
+        "type": "string",
+        "description": "The slug of the game."
+      },
+      "character": {
+        "type": "string",
+        "description": "The slug or UUID of the character to stabilize."
+      }
+    }
+  }
+}

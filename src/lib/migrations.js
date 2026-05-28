@@ -210,6 +210,14 @@ const MIGRATIONS = [
       ALTER TABLE games ADD COLUMN IF NOT EXISTS active_combatant_index INTEGER NOT NULL DEFAULT 0;
     `,
   },
+  {
+    version: '20260528155905',
+    name: 'add_concentration_to_characters_and_npcs',
+    sql: `
+      ALTER TABLE characters ADD COLUMN IF NOT EXISTS concentration JSONB DEFAULT NULL;
+      ALTER TABLE npcs       ADD COLUMN IF NOT EXISTS concentration JSONB DEFAULT NULL;
+    `,
+  },
 ];
 
 // Module-level guard: in a persistent process (MCP server) migrations only run once.
