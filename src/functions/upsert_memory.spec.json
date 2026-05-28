@@ -1,6 +1,6 @@
 {
   "name": "upsert_memory",
-  "description": "Creates or updates a named memory for a game. If a memory with the given slug already exists, its name and/or text are updated. Use this to record world lore, NPC decisions, plot developments, or anything the DM should remember across sessions.",
+  "description": "Creates or updates a named memory for a game. If a memory with the given slug already exists, its name, text, and tags are updated. Use this to record world lore, NPC decisions, plot developments, or anything the DM should remember across sessions. Memories can be tagged for selective retrieval via list_memories.",
   "parameters": {
     "type": "object",
     "required": ["game", "slug", "name", "memory"],
@@ -20,6 +20,11 @@
       "memory": {
         "type": "string",
         "description": "The full memory text."
+      },
+      "tags": {
+        "type": "array",
+        "items": { "type": "string" },
+        "description": "Optional tags for filtering (e.g., ['npc', 'plot', 'neverwinter']). Replaces existing tags if the memory already exists."
       }
     }
   }

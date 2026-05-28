@@ -218,6 +218,35 @@ const MIGRATIONS = [
       ALTER TABLE npcs       ADD COLUMN IF NOT EXISTS concentration JSONB DEFAULT NULL;
     `,
   },
+  {
+    version: '20260528193733',
+    name: 'add_tags_to_game_memories',
+    sql: `
+      ALTER TABLE game_memories ADD COLUMN IF NOT EXISTS tags JSONB DEFAULT '[]';
+    `,
+  },
+  {
+    version: '20260528193734',
+    name: 'add_world_time_to_games',
+    sql: `
+      ALTER TABLE games ADD COLUMN IF NOT EXISTS world_time JSONB DEFAULT NULL;
+    `,
+  },
+  {
+    version: '20260528193735',
+    name: 'create_session_logs_table',
+    sql: `
+      CREATE TABLE IF NOT EXISTS session_logs (
+        id         UUID PRIMARY KEY,
+        game_slug  TEXT NOT NULL,
+        category   TEXT,
+        entry      TEXT NOT NULL,
+        world_time JSONB DEFAULT NULL,
+        created_at TIMESTAMPTZ DEFAULT NOW()
+      );
+      CREATE INDEX IF NOT EXISTS session_logs_game_slug_idx ON session_logs (game_slug);
+    `,
+  },
 ];
 
 // Module-level guard: in a persistent process (MCP server) migrations only run once.

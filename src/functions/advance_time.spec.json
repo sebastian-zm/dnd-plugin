@@ -1,0 +1,23 @@
+{
+  "name": "advance_time",
+  "description": "Advances the in-game world time by a number of minutes. Automatically rolls over hours and days. Use after travel, rests, spell durations, or any activity with a known time cost. The updated time is shown in subsequent log_event entries. If world time has not been set, starts from Day 1, 00:00.",
+  "parameters": {
+    "type": "object",
+    "required": ["game", "minutes"],
+    "properties": {
+      "game": {
+        "type": "string",
+        "description": "The slug of the game."
+      },
+      "minutes": {
+        "type": "integer",
+        "minimum": 1,
+        "description": "Number of minutes to advance (e.g., 60 for 1 hour, 480 for 8 hours, 1440 for 1 day)."
+      },
+      "note": {
+        "type": "string",
+        "description": "Optional narrative note for this time advance (e.g., 'Party travels to Phandalin', 'Long rest in the inn')."
+      }
+    }
+  }
+}

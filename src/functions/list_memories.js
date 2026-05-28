@@ -4,7 +4,7 @@ import { ensureMigrations } from '../lib/migrations.js';
 export default async function list_memories(params, userSettings) {
   await ensureMigrations(userSettings);
 
-  const { game } = params;
+  const { game, tag } = params;
   const store = new SupabaseStore(userSettings.externalDbUrl, userSettings.externalDbKey);
 
   const gameRecord = await store.get('games', game);
@@ -18,9 +18,18 @@ export default async function list_memories(params, userSettings) {
     return `No memories found for game "${game}".`;
   }
 
-  return JSON.stringify(memories.map(m => ({
+  const filtered = tag
+    ? memories.filter(m => (m.tags ?? []).includes(tag))
+    : memories;
+
+  if (filtered.length === 0) {
+    return `No memories with tag "${tag}" found in game "${game}".`;
+  }
+
+  return JSON.stringify(filtered.map(m => ({
     slug: m.slug,
     name: m.name,
     memory: m.memory,
+    tags: m.tags ?? [],
   })));
 }

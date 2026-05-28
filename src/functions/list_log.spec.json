@@ -1,0 +1,25 @@
+{
+  "name": "list_log",
+  "description": "Returns session log entries for a game in chronological order. Use at the start of a session to recap what happened last time, or to review a specific category of events. Entries include in-game timestamps when world time tracking is active.",
+  "parameters": {
+    "type": "object",
+    "required": ["game"],
+    "properties": {
+      "game": {
+        "type": "string",
+        "description": "The slug of the game."
+      },
+      "category": {
+        "type": "string",
+        "description": "Filter by category. Returns only entries of this type.",
+        "enum": ["combat", "plot", "loot", "roleplay", "travel", "rest", "death"]
+      },
+      "limit": {
+        "type": "integer",
+        "minimum": 1,
+        "maximum": 200,
+        "description": "Maximum number of entries to return, most recent first within the window. Defaults to 50."
+      }
+    }
+  }
+}
