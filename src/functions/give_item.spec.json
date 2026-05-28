@@ -1,6 +1,6 @@
 {
   "name": "give_item",
-  "description": "Adds an item to a character's or NPC's equipment list.",
+  "description": "Adds an item to a character's or NPC's equipment list. Stacking-aware: if an entry with the same item name already exists (plain or as 'Item (xN)'), its count is incremented rather than adding a duplicate. Use quantity > 1 to add multiple at once.",
   "parameters": {
     "type": "object",
     "required": ["game", "entity_type", "entity", "item"],
@@ -20,7 +20,12 @@
       },
       "item": {
         "type": "string",
-        "description": "The item to add (e.g., 'Longsword +1', 'Potion of Healing')."
+        "description": "The item name (e.g., 'Longsword +1', 'Potion of Healing', 'Arrow'). If a matching entry already exists, its quantity is incremented."
+      },
+      "quantity": {
+        "type": "integer",
+        "minimum": 1,
+        "description": "Number of items to add. Defaults to 1. Stacks with any existing entry of the same name."
       }
     }
   }

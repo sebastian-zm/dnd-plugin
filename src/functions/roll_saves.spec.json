@@ -1,0 +1,44 @@
+{
+  "name": "roll_saves",
+  "description": "Rolls saving throws for multiple entities at once against a given DC. Automatically uses each entity's relevant ability score and saving throw proficiency bonus. Returns pass/fail results for all targets in one call. Use before apply_damage_bulk for AoE spells (Fireball, Cone of Cold, dragon breath, etc.).",
+  "parameters": {
+    "type": "object",
+    "required": ["game", "dc", "ability", "entities"],
+    "properties": {
+      "game": {
+        "type": "string",
+        "description": "The slug of the game."
+      },
+      "dc": {
+        "type": "integer",
+        "minimum": 1,
+        "description": "The saving throw DC."
+      },
+      "ability": {
+        "type": "string",
+        "enum": ["Strength", "Dexterity", "Constitution", "Intelligence", "Wisdom", "Charisma"],
+        "description": "The ability score used for the saving throw."
+      },
+      "entities": {
+        "type": "array",
+        "minItems": 1,
+        "description": "Entities making the saving throw.",
+        "items": {
+          "type": "object",
+          "required": ["entity", "entity_type"],
+          "properties": {
+            "entity": {
+              "type": "string",
+              "description": "Slug or UUID of the character or NPC."
+            },
+            "entity_type": {
+              "type": "string",
+              "enum": ["character", "npc"],
+              "description": "Whether this entity is a character or NPC."
+            }
+          }
+        }
+      }
+    }
+  }
+}

@@ -1,0 +1,53 @@
+{
+  "name": "apply_damage_bulk",
+  "description": "Applies damage to multiple targets in a single call. Each target has a multiplier for the save result: 1.0 = full damage (failed save), 0.5 = half damage (successful save), 0.0 = no damage (immune or Evasion pass). The server then applies each entity's own resistances, immunities, and vulnerabilities on top of the multiplier. Auto-applies Unconscious to characters at 0 HP and auto-breaks concentration. Use after roll_saves for AoE spells like Fireball or dragon breath.",
+  "parameters": {
+    "type": "object",
+    "required": ["game", "base_amount", "targets"],
+    "properties": {
+      "game": {
+        "type": "string",
+        "description": "The slug of the game."
+      },
+      "base_amount": {
+        "type": "integer",
+        "minimum": 0,
+        "description": "Total damage roll before any save multipliers (e.g., the Fireball roll of 28)."
+      },
+      "damage_type": {
+        "type": "string",
+        "description": "The type of damage. If omitted, no entity resistance multiplier is applied.",
+        "enum": [
+          "Acid", "Bludgeoning", "Cold", "Fire", "Force", "Lightning",
+          "Necrotic", "Piercing", "Poison", "Psychic", "Radiant",
+          "Slashing", "Thunder",
+          "Nonmagical Bludgeoning", "Nonmagical Piercing", "Nonmagical Slashing"
+        ]
+      },
+      "targets": {
+        "type": "array",
+        "minItems": 1,
+        "description": "Targets to damage, each with their individual save result multiplier.",
+        "items": {
+          "type": "object",
+          "required": ["entity", "entity_type", "multiplier"],
+          "properties": {
+            "entity": {
+              "type": "string",
+              "description": "Slug or UUID of the character or NPC."
+            },
+            "entity_type": {
+              "type": "string",
+              "enum": ["character", "npc"],
+              "description": "Whether this entity is a character or NPC."
+            },
+            "multiplier": {
+              "type": "number",
+              "description": "Damage multiplier from the save outcome: 1.0 (fail/full), 0.5 (pass/half), 0.0 (no damage). Applied before entity resistances."
+            }
+          }
+        }
+      }
+    }
+  }
+}

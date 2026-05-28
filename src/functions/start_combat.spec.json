@@ -1,6 +1,6 @@
 {
   "name": "start_combat",
-  "description": "Begins a combat encounter for a game. Sets the initiative order and advances to round 1. Each combatant entry requires a slug, entity type, display name, and initiative roll. The turn order is sorted from highest to lowest initiative. Call advance_turn after each combatant acts.",
+  "description": "Begins a combat encounter for a game. Sets the initiative order and advances to round 1. Each combatant entry requires a slug, entity type, and display name. If initiative is omitted for a combatant, it is auto-rolled as 1d20 + DEX modifier using the entity's stored stats. The turn order is sorted from highest to lowest initiative. Call advance_turn after each combatant acts.",
   "parameters": {
     "type": "object",
     "required": ["game", "combatants"],
@@ -15,7 +15,7 @@
         "minItems": 1,
         "items": {
           "type": "object",
-          "required": ["slug", "entity_type", "name", "initiative"],
+          "required": ["slug", "entity_type", "name"],
           "properties": {
             "slug": {
               "type": "string",
@@ -32,7 +32,7 @@
             },
             "initiative": {
               "type": "integer",
-              "description": "Initiative roll result (higher goes first)."
+              "description": "Initiative roll result (higher goes first). If omitted, auto-rolled as 1d20 + DEX modifier from the entity's stats."
             }
           }
         }

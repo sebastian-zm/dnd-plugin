@@ -1,0 +1,23 @@
+{
+  "name": "log_event",
+  "description": "Appends a session log entry for a game. Use this throughout the session to record significant events: combat outcomes, plot developments, NPC interactions, loot found, and decisions made. Entries are automatically timestamped with the current in-game world time (if set). Use list_log to review the log at the start of the next session.",
+  "parameters": {
+    "type": "object",
+    "required": ["game", "entry"],
+    "properties": {
+      "game": {
+        "type": "string",
+        "description": "The slug of the game."
+      },
+      "entry": {
+        "type": "string",
+        "description": "The event to record (e.g., 'Party defeated the goblin war band; Aragorn dropped to 0 HP and was stabilized by Gandalf.')."
+      },
+      "category": {
+        "type": "string",
+        "description": "Optional category for filtering. Suggested values: 'combat', 'plot', 'loot', 'roleplay', 'travel', 'rest', 'death'.",
+        "enum": ["combat", "plot", "loot", "roleplay", "travel", "rest", "death"]
+      }
+    }
+  }
+}

@@ -1,0 +1,35 @@
+{
+  "name": "set_world_time",
+  "description": "Sets the current in-game world time. Call this at the start of a campaign or after a time jump. World time is automatically attached to session log entries and shown in advance_time output. Use advance_time to move time forward incrementally.",
+  "parameters": {
+    "type": "object",
+    "required": ["game", "day"],
+    "properties": {
+      "game": {
+        "type": "string",
+        "description": "The slug of the game."
+      },
+      "day": {
+        "type": "integer",
+        "minimum": 1,
+        "description": "The campaign day (e.g., 1 for the first day of the adventure)."
+      },
+      "hour": {
+        "type": "integer",
+        "minimum": 0,
+        "maximum": 23,
+        "description": "Hour of day (0–23). Defaults to 0."
+      },
+      "minute": {
+        "type": "integer",
+        "minimum": 0,
+        "maximum": 59,
+        "description": "Minute (0–59). Defaults to 0."
+      },
+      "note": {
+        "type": "string",
+        "description": "Optional narrative note describing the time (e.g., 'Dawn, first day in Neverwinter')."
+      }
+    }
+  }
+}

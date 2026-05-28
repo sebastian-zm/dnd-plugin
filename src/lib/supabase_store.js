@@ -64,10 +64,11 @@ export class SupabaseStore {
     return data[0] ?? null;
   }
 
-  async list(table, filters = {}) {
-    const query = Object.entries(filters)
-      .map(([k, v]) => `${k}=eq.${encodeURIComponent(v)}`)
-      .join('&');
+  async list(table, filters = {}, options = {}) {
+    const params = Object.entries(filters).map(([k, v]) => `${k}=eq.${encodeURIComponent(v)}`);
+    if (options.order) params.push(`order=${encodeURIComponent(options.order)}`);
+    if (options.limit) params.push(`limit=${options.limit}`);
+    const query = params.join('&');
     const res = await fetch(`${this.url}/rest/v1/${table}${query ? `?${query}` : ''}`, {
       headers: this.#headers,
     });

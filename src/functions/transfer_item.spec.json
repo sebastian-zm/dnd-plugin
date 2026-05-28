@@ -1,0 +1,36 @@
+{
+  "name": "transfer_item",
+  "description": "Transfers an item from one character or NPC's equipment to another's. Removes from the source first, then adds to the destination.",
+  "parameters": {
+    "type": "object",
+    "required": ["game", "from_entity_type", "from_entity", "to_entity_type", "to_entity", "item"],
+    "properties": {
+      "game": {
+        "type": "string",
+        "description": "The slug of the game."
+      },
+      "from_entity_type": {
+        "type": "string",
+        "enum": ["character", "npc"],
+        "description": "Entity type of the source."
+      },
+      "from_entity": {
+        "type": "string",
+        "description": "Slug or UUID of the source character or NPC."
+      },
+      "to_entity_type": {
+        "type": "string",
+        "enum": ["character", "npc"],
+        "description": "Entity type of the destination."
+      },
+      "to_entity": {
+        "type": "string",
+        "description": "Slug or UUID of the destination character or NPC."
+      },
+      "item": {
+        "type": "string",
+        "description": "Exact item string to transfer (must match an entry in the source's equipment list)."
+      }
+    }
+  }
+}

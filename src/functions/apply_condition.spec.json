@@ -1,6 +1,6 @@
 {
   "name": "apply_condition",
-  "description": "Applies a condition to a character or NPC. Standard D&D 2024 conditions: Blinded, Charmed, Deafened, Frightened, Grappled, Incapacitated, Invisible, Paralyzed, Petrified, Poisoned, Prone, Restrained, Stunned, Unconscious. Exhaustion is tracked with its level (e.g. 'Exhaustion 1', 'Exhaustion 2'). Returns an error if the condition is already active.",
+  "description": "Applies a condition to a character or NPC. Standard D&D 2024 conditions: Blinded, Charmed, Deafened, Frightened, Grappled, Incapacitated, Invisible, Paralyzed, Petrified, Poisoned, Prone, Restrained, Stunned, Unconscious. Exhaustion is tracked with its level (e.g. 'Exhaustion 1', 'Exhaustion 2'). Idempotent: if the condition is already active, returns a no-op success message instead of an error.",
   "parameters": {
     "type": "object",
     "required": ["game", "entity_type", "entity", "condition"],

@@ -30,7 +30,7 @@ export default async function apply_condition(params, userSettings) {
 
     const current = record.conditions ?? [];
     if (current.includes(condition)) {
-      return `${record.name} already has the ${condition} condition.`;
+      return `${record.name} already has the ${condition} condition — no change.`;
     }
 
     const updated = await store.patch(table, record.id, { conditions: [...current, condition] }, record.updated_at);

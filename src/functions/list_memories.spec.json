@@ -1,6 +1,6 @@
 {
   "name": "list_memories",
-  "description": "Lists all memories for a game, returning id, slug, name, and full memory text. Call this at the start of every session to load the game's lore and context before narrating.",
+  "description": "Lists memories for a game, returning slug, name, full text, and tags. Call at the start of every session to load context. Use the tag parameter to retrieve only a relevant subset (e.g., tag='npc' for NPC notes, tag='plot' for quest state) instead of loading all memories.",
   "parameters": {
     "type": "object",
     "required": ["game"],
@@ -8,6 +8,10 @@
       "game": {
         "type": "string",
         "description": "The slug of the game."
+      },
+      "tag": {
+        "type": "string",
+        "description": "If provided, returns only memories that include this tag. Useful for targeted recall (e.g., 'npc', 'plot', 'faction', 'location')."
       }
     }
   }
