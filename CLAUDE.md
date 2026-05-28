@@ -40,7 +40,7 @@ Produces `dist/mcp-server.mjs`: a self-contained Node.js MCP server that exposes
 npm run build:mcpb
 ```
 
-Produces `dist/dnd-plugin.mcpb`: a zip archive (Claude Desktop extension format) that bundles the MCP server together with `src/manifest.json` and `src/assets/icon.svg`. The manifest declares the server entry point and prompts the user for their Supabase URL and service-role key at install time. This file can be loaded directly into Claude Desktop as an extension. Running `build:mcpb` automatically rebuilds the MCP server first.
+Produces `dist/dnd-plugin.mcpb`: a zip archive (Claude Desktop extension format) containing `src/manifest.json` and `src/assets/icon.svg`. The manifest configures Claude Desktop to run `npx github:sebastian-zm/dnd-plugin` on launch, so the extension always fetches the latest published version from GitHub. Prompts the user for their Supabase URL and service-role key at install time.
 
 # TypingMind Plugin Reference
 

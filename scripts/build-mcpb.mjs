@@ -1,7 +1,6 @@
 import fs from 'fs/promises';
 import { createWriteStream } from 'fs';
 import path from 'path';
-import { execSync } from 'child_process';
 import { createRequire } from 'module';
 const { ZipArchive } = createRequire(import.meta.url)('archiver');
 
@@ -10,15 +9,19 @@ const STAGING_DIR = path.join(DIST_DIR, 'mcpb-staging');
 const OUT_FILE = path.join(DIST_DIR, 'dnd-plugin.mcpb');
 
 async function buildMcpb() {
-  console.log('Building MCP server...');
-  execSync('node scripts/build-mcp.mjs', { stdio: 'inherit' });
-
   await fs.rm(STAGING_DIR, { recursive: true, force: true });
   await fs.mkdir(path.join(STAGING_DIR, 'server'), { recursive: true });
 
-  await fs.copyFile(
-    path.join(DIST_DIR, 'mcp-server.mjs'),
+  // Stub that delegates to the latest published version via npx
+  await fs.writeFile(
     path.join(STAGING_DIR, 'server', 'index.mjs'),
+    `import { spawn } from 'child_process';
+const proc = spawn('npx', ['-y', 'github:sebastian-zm/dnd-plugin'], {
+  env: process.env,
+  stdio: 'inherit',
+});
+proc.on('exit', code => process.exit(code ?? 0));
+`,
   );
 
   await fs.copyFile('src/manifest.json', path.join(STAGING_DIR, 'manifest.json'));
