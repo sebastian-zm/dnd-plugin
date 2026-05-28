@@ -1,6 +1,6 @@
 {
   "name": "remove_item",
-  "description": "Removes an item from a character's or NPC's equipment list. Removes the first exact match. If quantity > 1, looks for the grouped entry 'item (xN)' created by give_item.",
+  "description": "Removes one or more of an item from a character's or NPC's equipment list. Stacking-aware: finds the first entry matching the item name (plain or as 'Item (xN)') and decrements its count. If the count reaches zero the entry is removed; if it reaches one the '(xN)' suffix is dropped.",
   "parameters": {
     "type": "object",
     "required": ["game", "entity_type", "entity", "item"],
@@ -20,12 +20,12 @@
       },
       "item": {
         "type": "string",
-        "description": "The item name to remove (must match an entry in the equipment list)."
+        "description": "The item name to remove. Matches against the plain name or the 'Item (xN)' grouped form."
       },
       "quantity": {
         "type": "integer",
         "minimum": 1,
-        "description": "If > 1, removes the grouped entry 'item (xN)' rather than a plain item string. Defaults to 1."
+        "description": "Number of items to remove. Defaults to 1. If this exceeds the current stack size the entry is removed entirely."
       }
     }
   }
