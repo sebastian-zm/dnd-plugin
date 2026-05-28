@@ -233,6 +233,35 @@ const MIGRATIONS = [
     `,
   },
   {
+    version: '20260528200858',
+    name: 'create_active_effects_table',
+    sql: `
+      CREATE TABLE IF NOT EXISTS active_effects (
+        id                       UUID PRIMARY KEY,
+        game_slug                TEXT NOT NULL,
+        target_type              TEXT NOT NULL,
+        target                   TEXT NOT NULL,
+        name                     TEXT NOT NULL,
+        source_type              TEXT,
+        source                   TEXT,
+        concentration            BOOLEAN NOT NULL DEFAULT FALSE,
+        concentration_owner_type TEXT,
+        concentration_owner      TEXT,
+        duration_rounds          INTEGER NOT NULL DEFAULT -1,
+        expires_at_round         INTEGER,
+        modifiers                JSONB NOT NULL DEFAULT '[]',
+        notes                    TEXT,
+        created_at               TIMESTAMPTZ NOT NULL DEFAULT NOW()
+      );
+      CREATE INDEX IF NOT EXISTS active_effects_game_slug_idx
+        ON active_effects (game_slug);
+      CREATE INDEX IF NOT EXISTS active_effects_target_idx
+        ON active_effects (game_slug, target_type, target);
+      CREATE INDEX IF NOT EXISTS active_effects_conc_owner_idx
+        ON active_effects (game_slug, concentration_owner_type, concentration_owner);
+    `,
+  },
+  {
     version: '20260528193735',
     name: 'create_session_logs_table',
     sql: `

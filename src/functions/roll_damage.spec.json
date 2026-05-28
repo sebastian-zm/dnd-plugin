@@ -1,0 +1,50 @@
+{
+  "name": "roll_damage",
+  "description": "Roll weapon or spell damage with automatic active-effect modifiers. Loads the attacker's active effects and appends any damage bonus dice (Hex adds +1d6 necrotic, Hunter's Mark adds +1d6, etc.) to the base expression. Call after a successful attack roll (from roll_attack) before applying damage with apply_damage.",
+  "parameters": {
+    "type": "object",
+    "required": ["game", "attacker_type", "attacker", "target_type", "target", "base_expression"],
+    "properties": {
+      "game": {
+        "type": "string",
+        "description": "The slug of the game."
+      },
+      "attacker_type": {
+        "type": "string",
+        "enum": ["character", "npc"],
+        "description": "Whether the attacker is a character or NPC."
+      },
+      "attacker": {
+        "type": "string",
+        "description": "Slug or UUID of the attacker."
+      },
+      "target_type": {
+        "type": "string",
+        "enum": ["character", "npc"],
+        "description": "Entity type of the target (for context)."
+      },
+      "target": {
+        "type": "string",
+        "description": "Slug or UUID of the target."
+      },
+      "base_expression": {
+        "type": "string",
+        "description": "Base damage dice expression, e.g. '1d8+3' for a longsword, '2d6+4' for a greatsword. Do NOT include effect bonus dice — those are appended automatically."
+      },
+      "damage_type": {
+        "type": "string",
+        "description": "Damage type of the base attack (e.g. 'slashing', 'piercing', 'fire', 'radiant'). Shown in the output and passed to apply_damage."
+      },
+      "mode": {
+        "type": "string",
+        "enum": ["system", "transparent", "user"],
+        "default": "transparent",
+        "description": "system: compact total only. transparent: full breakdown with per-die results. user: prompts player to roll base dice and enter totals, then auto-rolls any effect bonus dice."
+      },
+      "description": {
+        "type": "string",
+        "description": "Optional label for this roll, e.g. 'Longsword damage' or 'Eldritch Blast'."
+      }
+    }
+  }
+}

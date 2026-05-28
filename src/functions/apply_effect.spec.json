@@ -1,0 +1,99 @@
+{
+  "name": "apply_effect",
+  "description": "Apply an active effect (spell, buff, or debuff) to one or more targets. Effects persist through combat rounds, auto-expire via advance_turn, and are automatically checked by roll_attack, roll_damage, and roll_saves. Built-in templates: bless (+1d4 to attacks/saves, concentration, 10r), bane (-1d4 to attacks/saves, concentration, 10r), hex (+1d6 necrotic damage, concentration, 60r), hunters_mark (+1d6 damage, concentration, 60r), faerie_fire (grants attackers advantage, concentration, 10r), guidance (+1d4 ability checks, concentration, 10r), haste (advantage on Dex saves, concentration, 10r), slow (-2 to attacks/saves, concentration, 10r), hold_person (grants attackers advantage, concentration, 10r). Pass modifiers to override any template. Use 'custom' for fully bespoke effects. For concentration spells, set source/source_type to the caster — clearing their concentration will remove the effect.",
+  "parameters": {
+    "type": "object",
+    "required": ["game", "targets", "effect"],
+    "properties": {
+      "game": {
+        "type": "string",
+        "description": "The slug of the game."
+      },
+      "targets": {
+        "type": "array",
+        "minItems": 1,
+        "description": "One or more entities to apply the effect to.",
+        "items": {
+          "type": "object",
+          "required": ["entity_type", "entity"],
+          "properties": {
+            "entity_type": {
+              "type": "string",
+              "enum": ["character", "npc"],
+              "description": "Whether the target is a character or NPC."
+            },
+            "entity": {
+              "type": "string",
+              "description": "Slug or UUID of the target."
+            }
+          }
+        }
+      },
+      "effect": {
+        "type": "string",
+        "description": "Template name (bless, bane, hex, hunters_mark, faerie_fire, guidance, haste, slow, hold_person) or 'custom' for a fully specified effect."
+      },
+      "source_type": {
+        "type": "string",
+        "enum": ["character", "npc", "system"],
+        "description": "Entity type of the caster or effect source."
+      },
+      "source": {
+        "type": "string",
+        "description": "Slug of the caster or source. For concentration spells this becomes the concentration owner — clearing their concentration removes this effect."
+      },
+      "concentration": {
+        "type": "boolean",
+        "description": "Override the template's concentration requirement."
+      },
+      "duration_rounds": {
+        "type": "integer",
+        "description": "Override the template duration in combat rounds. -1 for indefinite (must be removed manually). Auto-expires during advance_turn if combat is active."
+      },
+      "modifiers": {
+        "type": "array",
+        "description": "Override or specify the effect's modifiers. For Hex, include both the damage bonus and the ability-check disadvantage (specifying which ability). Each modifier must have type and roll_types.",
+        "items": {
+          "type": "object",
+          "required": ["type", "roll_types"],
+          "properties": {
+            "type": {
+              "type": "string",
+              "enum": ["bonus_dice", "subtract_dice", "flat_bonus", "flat_penalty", "advantage", "disadvantage", "grant_advantage"],
+              "description": "bonus_dice/subtract_dice: add/subtract dice. flat_bonus/flat_penalty: static modifier. advantage/disadvantage: the holder rolls with adv/dis. grant_advantage: attackers/opponents have advantage vs the holder."
+            },
+            "roll_types": {
+              "type": "array",
+              "items": {
+                "type": "string",
+                "enum": ["attack", "save", "damage", "ability_check", "initiative"]
+              },
+              "description": "Which roll types this modifier applies to."
+            },
+            "dice": {
+              "type": "string",
+              "description": "Dice expression for bonus_dice or subtract_dice, e.g. '1d4', '1d6'."
+            },
+            "value": {
+              "type": "number",
+              "description": "Numeric amount for flat_bonus or flat_penalty."
+            },
+            "damage_type": {
+              "type": "string",
+              "description": "Label for the type of bonus damage dealt (e.g. 'necrotic'). Informational only — appears in roll breakdowns."
+            },
+            "ability": {
+              "type": "string",
+              "enum": ["Strength", "Dexterity", "Constitution", "Intelligence", "Wisdom", "Charisma"],
+              "description": "Restrict this modifier to one ability for saves or ability checks."
+            }
+          }
+        }
+      },
+      "notes": {
+        "type": "string",
+        "description": "Optional description. Used as the effect name for 'custom' effects."
+      }
+    }
+  }
+}

@@ -1,5 +1,6 @@
 import { SupabaseStore } from '../lib/supabase_store.js';
 import { ensureMigrations } from '../lib/migrations.js';
+import { expireEffects } from '../lib/effects.js';
 
 export default async function advance_turn(params, userSettings) {
   await ensureMigrations(userSettings);
@@ -36,8 +37,14 @@ export default async function advance_turn(params, userSettings) {
     turn_order: updatedTurnOrder,
   });
 
+  // Expire any effects whose duration ran out at the start of this new round.
+  const expired = await expireEffects(userSettings, game, newRound);
+  const expiredNote = expired.length > 0
+    ? `\nExpired effects: ${expired.map(e => `${e.name} on ${e.target}`).join(', ')}`
+    : '';
+
   const current = turnOrder[currentIndex];
   const next = updatedTurnOrder[nextIndex];
   const roundNote = nextIndex === 0 ? `\n--- Round ${newRound} begins ---` : '';
-  return `${current.name} ends their turn.${roundNote}\nNow acting: ${next.name} (${next.entity_type}) — Round ${newRound}, position ${nextIndex + 1}/${turnOrder.length}.`;
+  return `${current.name} ends their turn.${roundNote}${expiredNote}\nNow acting: ${next.name} (${next.entity_type}) — Round ${newRound}, position ${nextIndex + 1}/${turnOrder.length}.`;
 }
