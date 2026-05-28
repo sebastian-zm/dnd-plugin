@@ -1,16 +1,18 @@
 import { SupabaseStore } from '../lib/supabase_store.js';
 import { ensureMigrations } from '../lib/migrations.js';
-import { EFFECT_TEMPLATES } from '../lib/effects.js';
 
 export default async function apply_effect(params, userSettings) {
   await ensureMigrations(userSettings);
 
   const {
-    game, targets, effect,
-    source_type, source,
-    concentration: concOverride,
-    duration_rounds: durationOverride,
-    modifiers: modifiersOverride,
+    game,
+    targets,
+    name: effectName,
+    source_type,
+    source,
+    concentration = false,
+    duration_rounds = -1,
+    end_on_save,
     notes,
   } = params;
 
@@ -19,35 +21,14 @@ export default async function apply_effect(params, userSettings) {
   const gameRecord = await store.get('games', game);
   if (!gameRecord) return `No game found with slug "${game}".`;
 
-  let template;
-  if (effect === 'custom') {
-    if (!modifiersOverride || modifiersOverride.length === 0) {
-      return 'Custom effects require at least one modifier in the modifiers array.';
-    }
-    template = {
-      name: notes || 'Custom Effect',
-      concentration: concOverride ?? false,
-      duration_rounds: durationOverride ?? -1,
-      modifiers: modifiersOverride,
-    };
-  } else {
-    template = EFFECT_TEMPLATES[effect];
-    if (!template) {
-      return `Unknown effect template "${effect}". Valid templates: ${Object.keys(EFFECT_TEMPLATES).join(', ')}, custom.`;
-    }
-  }
+  const concOwnerType = concentration ? (source_type ?? null) : null;
+  const concOwner = concentration ? (source ?? null) : null;
 
-  const finalConcentration = concOverride ?? template.concentration;
-  const finalDuration = durationOverride ?? template.duration_rounds;
-  const finalModifiers = (effect !== 'custom' && modifiersOverride) ? modifiersOverride : template.modifiers;
-  const effectName = effect === 'custom' ? (notes || 'Custom Effect') : template.name;
-
-  const concOwnerType = finalConcentration ? (source_type ?? null) : null;
-  const concOwner = finalConcentration ? (source ?? null) : null;
-
-  // Compute absolute expiry round when combat is active and duration is finite.
-  const expiresAtRound = (gameRecord.combat_active && finalDuration !== -1)
-    ? gameRecord.combat_round + finalDuration
+  // Pre-compute the absolute round at which this effect expires.
+  // Only meaningful when combat is already running; otherwise the DM
+  // should call apply_effect again (or remove_effect) at the right time.
+  const expiresAtRound = (gameRecord.combat_active && duration_rounds !== -1)
+    ? gameRecord.combat_round + duration_rounds
     : null;
 
   const results = [];
@@ -68,38 +49,36 @@ export default async function apply_effect(params, userSettings) {
       name: effectName,
       source_type: source_type ?? null,
       source: source ?? null,
-      concentration: finalConcentration,
+      concentration,
       concentration_owner_type: concOwnerType,
       concentration_owner: concOwner,
-      duration_rounds: finalDuration,
+      duration_rounds,
       expires_at_round: expiresAtRound,
-      modifiers: finalModifiers,
+      end_on_save: end_on_save ?? null,
+      modifiers: [],
       notes: notes ?? null,
     });
 
-    let durStr;
-    if (finalDuration === -1) {
-      durStr = 'indefinite duration';
+    const parts = [];
+
+    if (duration_rounds === -1) {
+      parts.push('indefinite duration');
     } else if (expiresAtRound != null) {
-      durStr = `${finalDuration} rounds (expires after round ${expiresAtRound})`;
+      parts.push(`${duration_rounds}r (expires after round ${expiresAtRound})`);
     } else {
-      durStr = `${finalDuration} rounds (timer starts when combat begins)`;
+      parts.push(`${duration_rounds}r (timer starts when combat begins)`);
     }
 
-    const concStr = finalConcentration
-      ? (concOwner ? ` [concentration: ${concOwner}]` : ' [concentration]')
-      : '';
+    if (end_on_save) {
+      parts.push(`save to end: DC ${end_on_save.dc} ${end_on_save.ability} at end of their turn`);
+    }
 
-    results.push(`  ${record.name} (${entity_type}): ${effectName} applied — ${durStr}${concStr}`);
+    if (concentration) {
+      parts.push(concOwner ? `concentration: ${concOwner}` : 'concentration');
+    }
+
+    results.push(`  ${record.name} (${entity_type}): "${effectName}" — ${parts.join(' | ')}`);
   }
 
-  const modSummary = finalModifiers.map(m => {
-    const dice = m.dice ? ` ${m.dice}` : '';
-    const val = m.value != null ? ` ${m.value}` : '';
-    const dt = m.damage_type ? ` [${m.damage_type}]` : '';
-    const ab = m.ability ? ` (${m.ability} only)` : '';
-    return `    • ${m.type}${dice}${val}${dt}${ab} on [${(m.roll_types ?? []).join(', ')}]`;
-  }).join('\n');
-
-  return `Effect applied:\n${results.join('\n')}\nModifiers:\n${modSummary}`;
+  return `Applied effect:\n${results.join('\n')}`;
 }

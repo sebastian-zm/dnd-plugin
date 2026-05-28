@@ -1,9 +1,9 @@
 {
   "name": "apply_effect",
-  "description": "Apply an active effect (spell, buff, or debuff) to one or more targets. Effects persist through combat rounds, auto-expire via advance_turn, and are automatically checked by roll_attack, roll_damage, and roll_saves. Built-in templates: bless (+1d4 to attacks/saves, concentration, 10r), bane (-1d4 to attacks/saves, concentration, 10r), hex (+1d6 necrotic damage, concentration, 60r), hunters_mark (+1d6 damage, concentration, 60r), faerie_fire (grants attackers advantage, concentration, 10r), guidance (+1d4 ability checks, concentration, 10r), haste (advantage on Dex saves, concentration, 10r), slow (-2 to attacks/saves, concentration, 10r), hold_person (grants attackers advantage, concentration, 10r). Pass modifiers to override any template. Use 'custom' for fully bespoke effects. For concentration spells, set source/source_type to the caster — clearing their concentration will remove the effect.",
+  "description": "Apply a named effect (spell, condition, curse, etc.) to one or more targets. Effects support three independent removal mechanisms that can be combined freely: (1) duration — auto-expires via advance_turn after a fixed number of rounds; (2) concentration — cleared automatically when the caster drops concentration via clear_concentration; (3) save to end — at the end of each of the target's turns, advance_turn rolls the specified saving throw and removes the effect on a success (models Hold Person, Paralyzed, Stunned, etc.). Use list_effects to inspect active effects and remove_effect to end one early.",
   "parameters": {
     "type": "object",
-    "required": ["game", "targets", "effect"],
+    "required": ["game", "targets", "name"],
     "properties": {
       "game": {
         "type": "string",
@@ -29,9 +29,9 @@
           }
         }
       },
-      "effect": {
+      "name": {
         "type": "string",
-        "description": "Template name (bless, bane, hex, hunters_mark, faerie_fire, guidance, haste, slow, hold_person) or 'custom' for a fully specified effect."
+        "description": "Display name of the effect, e.g. 'Hold Person', 'Bless', 'Poisoned'."
       },
       "source_type": {
         "type": "string",
@@ -40,59 +40,37 @@
       },
       "source": {
         "type": "string",
-        "description": "Slug of the caster or source. For concentration spells this becomes the concentration owner — clearing their concentration removes this effect."
+        "description": "Slug of the caster or source. For concentration effects this becomes the concentration owner — clearing their concentration removes the effect automatically."
       },
       "concentration": {
         "type": "boolean",
-        "description": "Override the template's concentration requirement."
+        "default": false,
+        "description": "Set true for spells that require concentration. When the caster's concentration is cleared (via clear_concentration or at 0 HP), this effect is removed from all targets."
       },
       "duration_rounds": {
         "type": "integer",
-        "description": "Override the template duration in combat rounds. -1 for indefinite (must be removed manually). Auto-expires during advance_turn if combat is active."
+        "default": -1,
+        "description": "Duration in combat rounds. -1 for indefinite (must be removed manually or via save/concentration). When combat is active the expiry round is computed immediately; outside combat the timer starts when combat begins and apply_effect is called again."
       },
-      "modifiers": {
-        "type": "array",
-        "description": "Override or specify the effect's modifiers. For Hex, include both the damage bonus and the ability-check disadvantage (specifying which ability). Each modifier must have type and roll_types.",
-        "items": {
-          "type": "object",
-          "required": ["type", "roll_types"],
-          "properties": {
-            "type": {
-              "type": "string",
-              "enum": ["bonus_dice", "subtract_dice", "flat_bonus", "flat_penalty", "advantage", "disadvantage", "grant_advantage"],
-              "description": "bonus_dice/subtract_dice: add/subtract dice. flat_bonus/flat_penalty: static modifier. advantage/disadvantage: the holder rolls with adv/dis. grant_advantage: attackers/opponents have advantage vs the holder."
-            },
-            "roll_types": {
-              "type": "array",
-              "items": {
-                "type": "string",
-                "enum": ["attack", "save", "damage", "ability_check", "initiative"]
-              },
-              "description": "Which roll types this modifier applies to."
-            },
-            "dice": {
-              "type": "string",
-              "description": "Dice expression for bonus_dice or subtract_dice, e.g. '1d4', '1d6'."
-            },
-            "value": {
-              "type": "number",
-              "description": "Numeric amount for flat_bonus or flat_penalty."
-            },
-            "damage_type": {
-              "type": "string",
-              "description": "Label for the type of bonus damage dealt (e.g. 'necrotic'). Informational only — appears in roll breakdowns."
-            },
-            "ability": {
-              "type": "string",
-              "enum": ["Strength", "Dexterity", "Constitution", "Intelligence", "Wisdom", "Charisma"],
-              "description": "Restrict this modifier to one ability for saves or ability checks."
-            }
+      "end_on_save": {
+        "type": "object",
+        "description": "If present, advance_turn rolls this saving throw at the end of each of the target's turns and removes the effect on a success. Use for Hold Person, Paralyzed, Stunned, Frightened, etc.",
+        "required": ["dc", "ability"],
+        "properties": {
+          "dc": {
+            "type": "integer",
+            "description": "Saving throw DC."
+          },
+          "ability": {
+            "type": "string",
+            "enum": ["Strength", "Dexterity", "Constitution", "Intelligence", "Wisdom", "Charisma"],
+            "description": "Ability used for the saving throw."
           }
         }
       },
       "notes": {
         "type": "string",
-        "description": "Optional description. Used as the effect name for 'custom' effects."
+        "description": "Freeform description of what the effect does mechanically (e.g. 'restrained, attacks have advantage against target'). Not parsed — kept for the DM's reference."
       }
     }
   }

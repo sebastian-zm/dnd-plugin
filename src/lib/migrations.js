@@ -262,6 +262,13 @@ const MIGRATIONS = [
     `,
   },
   {
+    version: '20260528203400',
+    name: 'add_end_on_save_to_active_effects',
+    sql: `
+      ALTER TABLE active_effects ADD COLUMN IF NOT EXISTS end_on_save JSONB DEFAULT NULL;
+    `,
+  },
+  {
     version: '20260528193735',
     name: 'create_session_logs_table',
     sql: `
