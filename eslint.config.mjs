@@ -10,6 +10,7 @@ export default [
       globals: {
         console: 'readonly',
         process: 'readonly',
+        fetch: 'readonly',
       },
     },
   },
@@ -18,10 +19,11 @@ export default [
     ...js.configs.recommended,
     languageOptions: {
       ecmaVersion: 2020,
-      sourceType: 'script',
+      sourceType: 'module',
       globals: {
         console: 'readonly',
         fetch: 'readonly',
+        crypto: 'readonly',
       },
     },
     rules: {
