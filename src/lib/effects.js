@@ -16,23 +16,11 @@ export async function clearConcentrationEffects(store, game_slug, concentration_
 
 // Delete all effects in a game whose expires_at_round <= upToRound.
 // Returns the deleted effect records so advance_turn can report what expired.
-export async function expireEffects(userSettings, game_slug, upToRound) {
-  const { externalDbUrl, externalDbKey } = userSettings;
-  const headers = {
-    apikey: externalDbKey,
-    Authorization: `Bearer ${externalDbKey}`,
-    'Content-Type': 'application/json',
-    Prefer: 'return=representation',
-  };
-  const url =
-    `${externalDbUrl}/rest/v1/active_effects` +
-    `?game_slug=eq.${encodeURIComponent(game_slug)}` +
-    `&expires_at_round=not.is.null` +
-    `&expires_at_round=lte.${upToRound}`;
-  const res = await fetch(url, { method: 'DELETE', headers });
-  if (!res.ok) {
-    const body = await res.json().catch(() => ({}));
-    throw new Error(`Failed to expire effects: ${body.message ?? res.statusText}`);
-  }
-  return res.json();
+// NULL expires_at_round rows are excluded automatically: NULL <= n is never true.
+export async function expireEffects(store, game_slug, upToRound) {
+  return store.deleteWhere(
+    'active_effects',
+    { game_slug, expires_at_round: { op: 'lte', value: upToRound } },
+    { returning: true },
+  );
 }

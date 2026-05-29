@@ -86,7 +86,7 @@ export default async function advance_turn(params, userSettings) {
 
   // --- Duration expiry ---
   // Delete effects whose expires_at_round has been reached by the new round.
-  const expired = await expireEffects(userSettings, game, newRound);
+  const expired = await expireEffects(store, game, newRound);
 
   // --- Build output ---
   const current = turnOrder[currentIndex];

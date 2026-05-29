@@ -93,14 +93,26 @@ var SupabaseStore = class {
     });
     await this.#checkResponse(res, `delete ${table}`);
   }
-  async deleteWhere(table, filters = {}) {
-    const query = Object.entries(filters).map(([k, v]) => `${k}=eq.${encodeURIComponent(v)}`).join("&");
-    if (!query) throw new Error("deleteWhere requires at least one filter");
-    const res = await fetch(`${this.url}/rest/v1/${table}?${query}`, {
+  // Delete every row matching the given filters.
+  // A filter value may be a scalar (matched with `eq`) or an operator object
+  // `{ op, value }` to use any PostgREST operator (e.g. `{ op: 'lte', value: 5 }`).
+  // Pass `{ returning: true }` to return the deleted rows as representation.
+  async deleteWhere(table, filters = {}, options = {}) {
+    const conditions = Object.entries(filters).map(([k, v]) => {
+      if (v !== null && typeof v === "object" && "op" in v) {
+        const value = v.value === null ? "null" : encodeURIComponent(v.value);
+        return `${k}=${v.op}.${value}`;
+      }
+      return `${k}=eq.${encodeURIComponent(v)}`;
+    });
+    if (conditions.length === 0) throw new Error("deleteWhere requires at least one filter");
+    const headers = options.returning ? { ...this.#headers, "Prefer": "return=representation" } : this.#headers;
+    const res = await fetch(`${this.url}/rest/v1/${table}?${conditions.join("&")}`, {
       method: "DELETE",
-      headers: this.#headers
+      headers
     });
     await this.#checkResponse(res, `deleteWhere ${table}`);
+    if (options.returning) return res.json();
   }
 };
 
@@ -501,21 +513,12 @@ async function clearConcentrationEffects(store, game_slug, concentration_owner_t
     concentration: true
   });
 }
-async function expireEffects(userSettings2, game_slug, upToRound) {
-  const { externalDbUrl, externalDbKey } = userSettings2;
-  const headers = {
-    apikey: externalDbKey,
-    Authorization: `Bearer ${externalDbKey}`,
-    "Content-Type": "application/json",
-    Prefer: "return=representation"
-  };
-  const url = `${externalDbUrl}/rest/v1/active_effects?game_slug=eq.${encodeURIComponent(game_slug)}&expires_at_round=not.is.null&expires_at_round=lte.${upToRound}`;
-  const res = await fetch(url, { method: "DELETE", headers });
-  if (!res.ok) {
-    const body = await res.json().catch(() => ({}));
-    throw new Error(`Failed to expire effects: ${body.message ?? res.statusText}`);
-  }
-  return res.json();
+async function expireEffects(store, game_slug, upToRound) {
+  return store.deleteWhere(
+    "active_effects",
+    { game_slug, expires_at_round: { op: "lte", value: upToRound } },
+    { returning: true }
+  );
 }
 
 // src/lib/saves.js
@@ -939,7 +942,7 @@ async function advance_turn(params, userSettings2) {
     combat_round: newRound,
     turn_order: updatedTurnOrder
   });
-  const expired = await expireEffects(userSettings2, game, newRound);
+  const expired = await expireEffects(store, game, newRound);
   const current = turnOrder[currentIndex];
   const next = updatedTurnOrder[nextIndex];
   const roundNote = nextIndex === 0 ? `
