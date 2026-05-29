@@ -1,0 +1,23 @@
+{
+  "name": "list_effects",
+  "description": "List all active effects (buffs, debuffs, spells) in a game, optionally filtered to a specific entity. Shows effect name, source, duration (rounds remaining / expiry round), concentration owner, and the full modifier list. The short ID shown in brackets can be passed to remove_effect.",
+  "parameters": {
+    "type": "object",
+    "required": ["game"],
+    "properties": {
+      "game": {
+        "type": "string",
+        "description": "The slug of the game."
+      },
+      "entity_type": {
+        "type": "string",
+        "enum": ["character", "npc"],
+        "description": "Optional: filter to effects targeting this entity type."
+      },
+      "entity": {
+        "type": "string",
+        "description": "Optional: filter to effects on this specific entity (slug or UUID)."
+      }
+    }
+  }
+}

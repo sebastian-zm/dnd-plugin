@@ -1,5 +1,6 @@
 import { SupabaseStore } from '../lib/supabase_store.js';
 import { ensureMigrations } from '../lib/migrations.js';
+import { clearConcentrationEffects } from '../lib/effects.js';
 
 const MAX_RETRIES = 5;
 
@@ -23,6 +24,10 @@ export default async function clear_concentration(params, userSettings) {
     const spell = record.concentration.spell;
     const updated = await store.patch(table, record.id, { concentration: null }, record.updated_at);
     if (updated === null) continue;
+
+    // Remove all active effects whose concentration owner is this entity.
+    // Match on the canonical slug since apply_effect stores the resolved slug.
+    await clearConcentrationEffects(store, game, entity_type, record.slug);
 
     return `${record.name} loses concentration on ${spell}.`;
   }

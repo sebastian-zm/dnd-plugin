@@ -1,0 +1,31 @@
+{
+  "name": "remove_effect",
+  "description": "Manually remove an active effect. Use when a spell is dispelled, a condition is cured, or an effect should end early. Prefer clear_concentration to remove concentration spells (it removes both the caster's concentration and all linked effects at once). Identify by effect_id (the 8-character prefix shown in list_effects) or by name + optional target.",
+  "parameters": {
+    "type": "object",
+    "required": ["game"],
+    "properties": {
+      "game": {
+        "type": "string",
+        "description": "The slug of the game."
+      },
+      "effect_id": {
+        "type": "string",
+        "description": "UUID or 8-character prefix (as shown in list_effects) of the specific effect to remove."
+      },
+      "name": {
+        "type": "string",
+        "description": "Name of the effect to remove (e.g. 'Bless'). Removes all matching instances if target is omitted."
+      },
+      "target_type": {
+        "type": "string",
+        "enum": ["character", "npc"],
+        "description": "Narrow removal to effects on this entity type."
+      },
+      "target": {
+        "type": "string",
+        "description": "Narrow removal to this specific entity (slug or UUID)."
+      }
+    }
+  }
+}

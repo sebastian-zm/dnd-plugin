@@ -101,15 +101,27 @@ export class SupabaseStore {
     await this.#checkResponse(res, `delete ${table}`);
   }
 
-  async deleteWhere(table, filters = {}) {
-    const query = Object.entries(filters)
-      .map(([k, v]) => `${k}=eq.${encodeURIComponent(v)}`)
-      .join('&');
-    if (!query) throw new Error('deleteWhere requires at least one filter');
-    const res = await fetch(`${this.url}/rest/v1/${table}?${query}`, {
+  // Delete every row matching the given filters.
+  // A filter value may be a scalar (matched with `eq`) or an operator object
+  // `{ op, value }` to use any PostgREST operator (e.g. `{ op: 'lte', value: 5 }`).
+  // Pass `{ returning: true }` to return the deleted rows as representation.
+  async deleteWhere(table, filters = {}, options = {}) {
+    const conditions = Object.entries(filters).map(([k, v]) => {
+      if (v !== null && typeof v === 'object' && 'op' in v) {
+        const value = v.value === null ? 'null' : encodeURIComponent(v.value);
+        return `${k}=${v.op}.${value}`;
+      }
+      return `${k}=eq.${encodeURIComponent(v)}`;
+    });
+    if (conditions.length === 0) throw new Error('deleteWhere requires at least one filter');
+    const headers = options.returning
+      ? { ...this.#headers, 'Prefer': 'return=representation' }
+      : this.#headers;
+    const res = await fetch(`${this.url}/rest/v1/${table}?${conditions.join('&')}`, {
       method: 'DELETE',
-      headers: this.#headers,
+      headers,
     });
     await this.#checkResponse(res, `deleteWhere ${table}`);
+    if (options.returning) return res.json();
   }
 }
