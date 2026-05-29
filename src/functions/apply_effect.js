@@ -21,8 +21,20 @@ export default async function apply_effect(params, userSettings) {
   const gameRecord = await store.get('games', game);
   if (!gameRecord) return `No game found with slug "${game}".`;
 
-  const concOwnerType = concentration ? (source_type ?? null) : null;
-  const concOwner = concentration ? (source ?? null) : null;
+  // Resolve the concentration owner to a canonical slug. apply_effect, the
+  // turn_order, and clear_concentration may each be handed a slug or a UUID;
+  // storing the resolved slug ensures clearConcentrationEffects matches later.
+  let concOwnerType = null;
+  let concOwner = null;
+  if (concentration) {
+    concOwnerType = source_type ?? null;
+    concOwner = source ?? null;
+    if (source && (source_type === 'character' || source_type === 'npc')) {
+      const sourceTable = source_type === 'character' ? 'characters' : 'npcs';
+      const sourceRecord = await store.get(sourceTable, source, game);
+      if (sourceRecord) concOwner = sourceRecord.slug;
+    }
+  }
 
   // Pre-compute the absolute round at which this effect expires.
   // Only meaningful when combat is already running; otherwise the DM
@@ -45,7 +57,7 @@ export default async function apply_effect(params, userSettings) {
       id: crypto.randomUUID(),
       game_slug: game,
       target_type: entity_type,
-      target: entity,
+      target: record.slug,
       name: effectName,
       source_type: source_type ?? null,
       source: source ?? null,

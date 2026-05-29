@@ -26,7 +26,8 @@ export default async function clear_concentration(params, userSettings) {
     if (updated === null) continue;
 
     // Remove all active effects whose concentration owner is this entity.
-    await clearConcentrationEffects(store, game, entity_type, entity);
+    // Match on the canonical slug since apply_effect stores the resolved slug.
+    await clearConcentrationEffects(store, game, entity_type, record.slug);
 
     return `${record.name} loses concentration on ${spell}.`;
   }

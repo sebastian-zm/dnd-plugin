@@ -1,15 +1,7 @@
 import { SupabaseStore } from '../lib/supabase_store.js';
 import { ensureMigrations } from '../lib/migrations.js';
 import { DiceParser } from '../lib/dice.js';
-
-const ABILITY_COLUMNS = {
-  'Strength': 'strength',
-  'Dexterity': 'dexterity',
-  'Constitution': 'constitution',
-  'Intelligence': 'intelligence',
-  'Wisdom': 'wisdom',
-  'Charisma': 'charisma',
-};
+import { saveBonus, signedBonus } from '../lib/saves.js';
 
 export default async function roll_saves(params, userSettings) {
   await ensureMigrations(userSettings);
@@ -23,7 +15,6 @@ export default async function roll_saves(params, userSettings) {
     return `No game found with slug "${game}".`;
   }
 
-  const abilityColumn = ABILITY_COLUMNS[ability];
   const lines = [`${ability} saving throws (DC ${dc}):`];
 
   for (const ent of entities) {
@@ -35,24 +26,15 @@ export default async function roll_saves(params, userSettings) {
       continue;
     }
 
-    const abilityScore = record[abilityColumn] ?? 10;
-    const abilityMod = Math.floor((abilityScore - 10) / 2);
-    const pb = record.pb ?? 0;
-
-    const proficiencies = record.proficiencies ?? [];
-    const isProficient = proficiencies.some(
-      p => p.toLowerCase() === `${ability.toLowerCase()} saving throws`
-    );
-
-    const bonus = abilityMod + (isProficient ? pb : 0);
-    const signedBonus = bonus >= 0 ? `+${bonus}` : `${bonus}`;
-    const roll = parser.parse(`1d20${signedBonus}`);
+    const { bonus, isProficient } = saveBonus(record, ability);
+    const signed = signedBonus(bonus);
+    const roll = parser.parse(`1d20${signed}`);
     const d20Result = roll.total - bonus;
     const passed = roll.total >= dc;
 
     const profNote = isProficient ? ' (prof)' : '';
     const outcome = passed ? 'PASS' : 'FAIL';
-    lines.push(`  ${record.name} (${ent.entity_type}): d20=${d20Result}${signedBonus}${profNote} = ${roll.total} — ${outcome}`);
+    lines.push(`  ${record.name} (${ent.entity_type}): d20=${d20Result}${signed}${profNote} = ${roll.total} — ${outcome}`);
   }
 
   return lines.join('\n');

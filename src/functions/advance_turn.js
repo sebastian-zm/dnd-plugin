@@ -1,15 +1,8 @@
 import { SupabaseStore } from '../lib/supabase_store.js';
 import { ensureMigrations } from '../lib/migrations.js';
 import { loadEffectsForEntity, expireEffects } from '../lib/effects.js';
-
-const ABILITY_COLUMNS = {
-  Strength: 'strength',
-  Dexterity: 'dexterity',
-  Constitution: 'constitution',
-  Intelligence: 'intelligence',
-  Wisdom: 'wisdom',
-  Charisma: 'charisma',
-};
+import { ABILITY_COLUMNS, saveBonus, signedBonus } from '../lib/saves.js';
+import { DiceParser } from '../lib/dice.js';
 
 export default async function advance_turn(params, userSettings) {
   await ensureMigrations(userSettings);
@@ -52,33 +45,26 @@ export default async function advance_turn(params, userSettings) {
       const entityRecord = await store.get(table, endingCombatant.slug, game);
 
       if (entityRecord) {
+        const parser = new DiceParser();
         for (const effect of saveEffects) {
           const { dc, ability } = effect.end_on_save;
-          const abilityCol = ABILITY_COLUMNS[ability];
-          if (!abilityCol) continue;
+          if (!ABILITY_COLUMNS[ability]) continue;
 
-          const score = entityRecord[abilityCol] ?? 10;
-          const mod = Math.floor((score - 10) / 2);
-          const pb = entityRecord.pb ?? 0;
-          const proficiencies = entityRecord.proficiencies ?? [];
-          const isProficient = proficiencies.some(
-            p => p.toLowerCase() === `${ability.toLowerCase()} saving throws`
-          );
-          const bonus = mod + (isProficient ? pb : 0);
-          const signedBonus = bonus >= 0 ? `+${bonus}` : `${bonus}`;
-
-          const d20 = Math.floor(Math.random() * 20) + 1;
-          const total = d20 + bonus;
+          const { bonus } = saveBonus(entityRecord, ability);
+          const signed = signedBonus(bonus);
+          const roll = parser.parse(`1d20${signed}`);
+          const d20 = roll.total - bonus;
+          const total = roll.total;
           const passed = total >= dc;
 
           if (passed) {
             await store.delete('active_effects', effect.id);
             saveLines.push(
-              `  ${endingCombatant.name} saves vs ${effect.name} (DC ${dc} ${ability}): ${d20}${signedBonus} = ${total} — PASS, effect ended`
+              `  ${endingCombatant.name} saves vs ${effect.name} (DC ${dc} ${ability}): ${d20}${signed} = ${total} — PASS, effect ended`
             );
           } else {
             saveLines.push(
-              `  ${endingCombatant.name} saves vs ${effect.name} (DC ${dc} ${ability}): ${d20}${signedBonus} = ${total} — FAIL`
+              `  ${endingCombatant.name} saves vs ${effect.name} (DC ${dc} ${ability}): ${d20}${signed} = ${total} — FAIL`
             );
           }
         }

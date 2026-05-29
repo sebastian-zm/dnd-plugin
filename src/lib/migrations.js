@@ -233,6 +233,21 @@ const MIGRATIONS = [
     `,
   },
   {
+    version: '20260528193735',
+    name: 'create_session_logs_table',
+    sql: `
+      CREATE TABLE IF NOT EXISTS session_logs (
+        id         UUID PRIMARY KEY,
+        game_slug  TEXT NOT NULL,
+        category   TEXT,
+        entry      TEXT NOT NULL,
+        world_time JSONB DEFAULT NULL,
+        created_at TIMESTAMPTZ DEFAULT NOW()
+      );
+      CREATE INDEX IF NOT EXISTS session_logs_game_slug_idx ON session_logs (game_slug);
+    `,
+  },
+  {
     version: '20260528200858',
     name: 'create_active_effects_table',
     sql: `
@@ -266,21 +281,6 @@ const MIGRATIONS = [
     name: 'add_end_on_save_to_active_effects',
     sql: `
       ALTER TABLE active_effects ADD COLUMN IF NOT EXISTS end_on_save JSONB DEFAULT NULL;
-    `,
-  },
-  {
-    version: '20260528193735',
-    name: 'create_session_logs_table',
-    sql: `
-      CREATE TABLE IF NOT EXISTS session_logs (
-        id         UUID PRIMARY KEY,
-        game_slug  TEXT NOT NULL,
-        category   TEXT,
-        entry      TEXT NOT NULL,
-        world_time JSONB DEFAULT NULL,
-        created_at TIMESTAMPTZ DEFAULT NOW()
-      );
-      CREATE INDEX IF NOT EXISTS session_logs_game_slug_idx ON session_logs (game_slug);
     `,
   },
 ];
